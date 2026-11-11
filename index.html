@@ -507,10 +507,6 @@ footer .footer-bottom{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.18
 .admin-modules button{cursor:pointer}
 @media(max-width:800px){.advice-grid{grid-template-columns:1fr}.ivc-page-photo,.ivc-audit-visual{grid-template-columns:1fr}.ivc-page-photo img,.ivc-audit-visual img{height:220px}footer{grid-template-columns:1fr 1fr;gap:28px}footer .footer-brand{grid-column:1/-1}}
 @media(max-width:480px){footer{grid-template-columns:1fr}footer .footer-brand{grid-column:auto}footer .footer-bottom{flex-direction:column}}
-
-.ivc-admin-assign{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:7px;min-width:220px}
-.ivc-admin-assign select{max-width:190px;padding:7px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#172033}
-.ivc-admin-assign button{padding:7px 10px;font-size:12px}
 </style>
 
 <style id="ivc-v17-photo-directory">
@@ -914,7 +910,47 @@ function filterProducts(){let q=document.getElementById('productSearch').value.t
 function ivcDemoNotice(m){alert(m+'\n\nMaquette de démonstration : aucune donnée réelle n’est transmise.');}
 function ivcAddAnimal(){var n=prompt('Nom de l’animal à ajouter :');if(!n)return;var box=document.getElementById('clientAnimals'),row=document.createElement('div');row.className='data-row';var av=document.createElement('span');av.className='animal-avatar';av.textContent='🐾';var d=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');b.textContent=n;sm.textContent='Animal ajouté dans cette session de démonstration';d.append(b,sm);var st=document.createElement('span');st.className='status-pill pending';st.textContent='Démo';row.append(av,d,st);box.appendChild(row);}
 function ivcAddFarm(){var n=prompt('Nom de l’élevage ou de l’exploitation :');if(!n)return;var box=document.getElementById('farmList'),row=document.createElement('div');row.className='data-row';var av=document.createElement('span');av.className='animal-avatar';av.textContent='🐾';var d=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');b.textContent=n;sm.textContent='Nouvel élevage · ajouté dans cette session de démonstration';d.append(b,sm);var st=document.createElement('span');st.className='status-pill pending';st.textContent='À compléter';row.append(av,d,st);box.appendChild(row);}
-function ivcDownloadReport(name){var body='IVoire Vet Consulting - Rapport de démonstration\n\nCe document est un exemple généré par la maquette. Il ne contient aucune donnée médicale ou administrative réelle.\n';var blob=new Blob([body],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);}function ivcDownloadPDF(title){var w=window.open('','_blank');if(!w){ivcDemoNotice('Autorisez les fenêtres contextuelles pour imprimer le rapport PDF.');return;}w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font:14px Arial,sans-serif;padding:40px;color:#203329}h1{color:#159653}small{color:#66776d}.line{border-top:1px solid #dce8df;margin:24px 0;padding-top:15px}</style></head><body><h1>IVoire Vet Consulting</h1><h2>'+title+'</h2><p>Rapport de démonstration généré par la maquette IVC.</p><div class="line"><b>Statut :</b> document fictif — aucune donnée réelle.</div><p>Ce rapport illustre le format de sortie. Les résultats et informations définitifs devront provenir du système de laboratoire ou du dossier professionnel sécurisé.</p><small>Document de démonstration IVC</small><script>window.onload=function(){window.print();};<\/script></body></html>');w.document.close();}
+function ivcDownloadReport(name){var body='IVoire Vet Consulting - Rapport de démonstration\n\nCe document est un exemple généré par la maquette. Il ne contient aucune donnée médicale ou administrative réelle.\n';var blob=new Blob([body],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);}function ivcDownloadPDF(title){var w=window.open('','_blank');if(!w){ivcDemoNotice('Autorisez les fenêtres contextuelles pour imprimer le rapport PDF.');return;}w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font:14px Arial,sans-serif;padding:40px;color:#203329}h1{color:#159653}small{color:#66776d}.line{border-top:1px solid #dce8df;margin:24px 0;padding-top:15px}</style></head><body><h1>IVoire Vet Consulting</h1><h2>'+title+'</h2><p>Rapport de démonstration généré par la maquette IVC.</p><div class="line"><b>Statut :</b> document fictif — aucune donnée réelle.</div><p>Ce rapport illustre le format de sortie. Les résultats et informations définitifs devront provenir du système de laboratoire ou du dossier professionnel sécurisé.</p><small>Document de démonstration IVC</small><script>window.onload=function(){window.print();};<\/script>
+<style id="ivc-auth-state-colors">
+.rightnav .login{background:#159653!important;color:#fff!important;border-color:#159653!important;transition:background .2s ease,color .2s ease}
+.rightnav .login.ivc-connected{background:#7652b5!important;border-color:#7652b5!important;color:#fff!important}
+.ivc-account-card .ivc-account-btn.alt{margin:5px 5px 5px 0}
+</style>
+<script id="ivc-auth-state-and-access-guard">
+(function(){
+ 'use strict';
+ var login=document.querySelector('.rightnav .login');
+ window.ivcUpdateAuthButton=function(){
+   if(!login)return;
+   var connected=window.IVC_AUTHENTICATED===true;
+   login.classList.toggle('ivc-connected',connected);
+   login.textContent=connected?'Mon espace':'Connexion';
+   login.setAttribute('aria-label',connected?'Ouvrir mon espace IVC':'Connexion à IVC');
+   login.onclick=function(){ if(connected)window.ivcOpenAccounts(); else window.ivcOpenAccounts({role:'client',tab:'login'}); };
+ };
+ window.ivcUpdateAuthButton();
+ // Les espaces de service et les modules de travail sont privés. Accueil et contact restent publics.
+ var originalShowPage=window.showPage;
+ if(typeof originalShowPage==='function'){
+   window.showPage=function(id){
+     var publicPages=['home','contact'];
+     if(!publicPages.includes(String(id)) && window.IVC_AUTH_READY===true && window.IVC_AUTHENTICATED!==true){
+       alert('Crée un compte ou connecte-toi pour accéder aux services IVC.');
+       window.ivcOpenAccounts?.({role:'client',tab:'login'});
+       return;
+     }
+     if(!publicPages.includes(String(id)) && window.IVC_AUTH_READY!==true){
+       alert('Vérification de ta session IVC en cours. Réessaie dans un instant.');
+       return;
+     }
+     return originalShowPage.apply(this,arguments);
+   };
+ }
+ document.addEventListener('DOMContentLoaded',window.ivcUpdateAuthButton);
+})();
+</script>
+
+</body></html>');w.document.close();}
 </script>
 <style id="ivc-modifications-nov-2026">
 :root{--purple:#790078}
@@ -1209,7 +1245,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
  const SUPABASE_URL = 'https://eykvnhbkhcelzwbowxqz.supabase.co';
  const SUPABASE_KEY = 'sb_publishable_nRk4BoZlexVmU7RXdoSdMg_Nlk1B8XU';
  let client = null, currentUser = null, currentProfile = null;
- let selectedRequest = null, refreshBusy = false, preferredRole = 'client', activeMessageChannel = null, activeRequestChannel = null, activeRequestChannelKey = null;
+ let selectedRequest = null, refreshBusy = false, preferredRole = 'client', activeMessageChannel = null;
  const $ = id => document.getElementById(id);
  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const roleLabel = r => ({client:'Client',proprietaire:'Parent d’animaux',eleveur:'Éleveur',veterinaire:'Vétérinaire',auditeur:'Auditeur',acheteur:'Acheteur',admin:'Administrateur IVC'}[r] || r || 'Client');
@@ -1232,10 +1268,12 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
   if(error) throw error;
   currentUser=data.session?.user||null;
   if(currentUser) await loadProfile();
+  window.IVC_AUTH_READY=true; window.IVC_AUTHENTICATED=!!currentUser; window.ivcUpdateAuthButton?.();
+  client.auth.onAuthStateChange(async (_event, session)=>{ currentUser=session?.user||null; try{ if(currentUser) await loadProfile(); else currentProfile=null; }catch(err){console.error('IVC profile refresh:',err)} window.IVC_AUTHENTICATED=!!currentUser; window.ivcUpdateAuthButton?.(); if(typeof renderAccount==='function')renderAccount(); });
  }
  async function loadProfile(){
   if(!currentUser){currentProfile=null;return}
-  const {data,error}=await client.from('profiles').select('id,full_name,role,is_verified,is_available').eq('id',currentUser.id).maybeSingle();
+  const {data,error}=await client.from('profiles').select('id,full_name,role').eq('id',currentUser.id).maybeSingle();
   if(error) throw error;
   currentProfile=data;
   if(!currentProfile) throw new Error("Le profil IVC n'a pas encore été créé dans profiles. Vérifie le déclencheur déjà installé dans Supabase.");
@@ -1250,9 +1288,12 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[ -]+/g,'_');
   const appRole=profileRoleToAppRole[profileRole];
   if(!appRole){notice("Le rôle enregistré dans profiles.role (« "+(currentProfile?.role||"vide")+" ») ne correspond à aucun des espaces IVC autorisés. Contacte l’administration IVC.");return false}
-  if(typeof window.enterApp!=='function'){notice("Le tableau de bord IVC n'est pas disponible sur cette page.");return false}
-  window.ivcCloseAccounts?.();
-  window.enterApp(appRole,currentProfile.full_name||currentUser?.email||'');
+  // Ne plus ouvrir l'ancien tableau de bord local de démonstration (enterApp).
+  // L'espace authentifié est piloté par le profil Supabase et le panneau de services IVC.
+  window.IVC_AUTHENTICATED=true;
+  window.ivcUpdateAuthButton?.();
+  $('ivcAccountLayer')?.classList.add('open');
+  renderAccount();
   return true;
  }
  function accountRoot(){return $('ivcAccountContent')}
@@ -1305,7 +1346,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
    <p class="ivc-account-muted">Connecté : ${esc(currentUser.email)} · Espace ${esc(roleLabel(requestedRole))}</p>
    <div class="ivc-account-grid">
     <div class="ivc-account-card"><h3>Mes demandes</h3><p>Consulte tes demandes vétérinaires et tes audits enregistrés dans la base IVC.</p><button class="ivc-account-btn" id="ivcAccountInbox">Ouvrir la messagerie</button></div>
-    <div class="ivc-account-card"><h3>${esc(space.title)}</h3><p>${esc(space.description)}</p><button class="ivc-account-btn" id="ivcOpenRequestedSpace" type="button">${esc(space.action)}</button><button class="ivc-account-btn alt" id="ivcAccountVet" type="button">Demander une intervention vétérinaire</button><button class="ivc-account-btn alt" id="ivcAccountAudit" type="button">Demander un audit</button></div>
+    <div class="ivc-account-card"><h3>Mon tableau de bord — tous les services IVC</h3><p>Retrouvez vos services depuis un seul espace, sans devoir changer de compte.</p><button class="ivc-account-btn" id="ivcOpenRequestedSpace" type="button">${esc(space.action)}</button><button class="ivc-account-btn alt" type="button" onclick="ivcCloseAccounts();showPage('boutique')">Boutique IVC</button><button class="ivc-account-btn alt" type="button" onclick="ivcCloseAccounts();showPage('audit')">Demandes d’audit</button><button class="ivc-account-btn alt" type="button" onclick="ivcCloseAccounts();showPage('intervention')">Déploiement de vétérinaire</button><button class="ivc-account-btn alt" type="button" onclick="ivcCloseAccounts();showPage('lims')">Portail LIMS</button><button class="ivc-account-btn alt" id="ivcAccountVet" type="button">Demander une intervention vétérinaire</button><button class="ivc-account-btn alt" id="ivcAccountAudit" type="button">Demander un audit</button><button class="ivc-account-btn alt" type="button" onclick="ivcCloseAccounts();window.ivcOpenInbox()">Mes demandes et messagerie</button></div>
    </div>
    ${admin?'<div class="ivc-account-card"><h3>Administration IVC</h3><p>Accès réservé au compte administrateur authentifié.</p><button class="ivc-account-btn" id="ivcOpenAdminDashboard" type="button">Ouvrir le tableau de bord d’administration</button></div>':'<p class="ivc-account-muted">L’espace demandé est affiché selon votre inscription. Les autorisations effectives dépendent du rôle validé dans la base IVC.</p>'}
    <button class="ivc-account-btn alt" id="ivcSbLogout">Se déconnecter</button>`;
@@ -1340,7 +1381,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
   try{
    const {data,error}=await client.auth.signInWithPassword({email,password});
    if(error)throw error;
-   currentUser=data.user;await loadProfile();
+   currentUser=data.user;await loadProfile(); window.IVC_AUTHENTICATED=true; window.ivcUpdateAuthButton?.();
    if(openProfileDashboard()) notice('Connexion réussie. Votre espace IVC est ouvert.');
   }catch(err){notice('Connexion impossible : '+(err.message||err))}
   finally{b.disabled=false;b.textContent='Se connecter'}
@@ -1349,9 +1390,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
  async function logout(){
   const {error}=await client.auth.signOut();
   if(error){notice('Déconnexion impossible : '+error.message);return}
-  if(activeMessageChannel){try{await client.removeChannel(activeMessageChannel)}catch(_e){}activeMessageChannel=null;}
-  if(activeRequestChannel){try{await client.removeChannel(activeRequestChannel)}catch(_e){}activeRequestChannel=null;activeRequestChannelKey=null;}
-  currentUser=null;currentProfile=null;selectedRequest=null;renderAccount();renderInbox();
+  currentUser=null;currentProfile=null;selectedRequest=null;window.IVC_AUTHENTICATED=false;window.ivcUpdateAuthButton?.();renderAccount();renderInbox();
  }
  function accountSessionRequired(){
   if(!currentUser){notice('Connecte-toi ou crée un compte IVC avant d’envoyer une demande.');window.ivcOpenAccounts();return false}
@@ -1397,26 +1436,11 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
   let q=client.from('requests').select('id,owner_id,request_type,consultation_mode,subject,description,animal_type,assigned_professional_id,status,created_at').order('created_at',{ascending:false}).limit(100);
   const {data,error}=await q;if(error)throw error;return data||[];
  }
- async function ensureRequestRealtime(){
-  if(!currentUser)return;
-  const role=String(currentProfile?.role||'client');
-  const key=currentUser.id+':'+role;
-  if(activeRequestChannel&&activeRequestChannelKey===key)return;
-  if(activeRequestChannel){try{await client.removeChannel(activeRequestChannel)}catch(_e){}activeRequestChannel=null;}
-  const filter=role==='admin'?null:(role==='veterinaire'?'assigned_professional_id=eq.':'owner_id=eq.')+currentUser.id;
-  const config={event:'*',schema:'public',table:'requests'};
-  if(filter)config.filter=filter;
-  activeRequestChannel=client.channel('ivc-requests-'+currentUser.id)
-   .on('postgres_changes',config,()=>{if(!refreshBusy)renderInbox()})
-   .subscribe();
-  activeRequestChannelKey=key;
- }
  async function renderInbox(){
   const list=$('ivcInboxList'),msgs=$('ivcInboxMsgs'),title=$('ivcInboxListTitle'),conv=$('ivcInboxConversationTitle');
   if(!list||!msgs)return;
   if(!currentUser){list.innerHTML='<p class="ivc-demo-note">Connecte-toi pour consulter tes demandes privées.</p>';msgs.innerHTML='<p class="ivc-demo-note">La messagerie nécessite un compte IVC.</p>';if(title)title.textContent='Connexion requise';if(conv)conv.textContent='Conversation';return}
   try{
-   await ensureRequestRealtime();
    const requests=await getRequests();
    if(title)title.textContent=currentProfile?.role==='admin'?'Toutes les demandes':(['veterinaire','auditeur'].includes(currentProfile?.role)?'Demandes qui me sont affectées':'Mes demandes');
    list.innerHTML=requests.length?requests.map(r=>`<button class="ivc-inbox-item ${r.id===selectedRequest?'sel':''}" data-id="${esc(r.id)}"><b>${r.request_type==='audit'?'Demande d’audit':(r.consultation_mode==='video'?'Consultation vidéo':'Demande d’intervention vétérinaire')}</b><br>${esc(r.subject)}<br><small>${esc(statusLabel(r.status))} · ${new Date(r.created_at).toLocaleString('fr-FR')}</small></button>`).join(''):'<p class="ivc-demo-note">Aucune demande visible pour ce compte.</p>';
@@ -1449,13 +1473,12 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
    }));
    msgs.innerHTML=renderedMessages.length?renderedMessages.join(''):'<p class="ivc-demo-note">Aucun message. Tu peux commencer la conversation.</p>';
    msgs.scrollTop=msgs.scrollHeight;
-   const canRespond=r.request_type==='veterinary'&&r.consultation_mode==='video'&&r.status==='pending'&&r.assigned_professional_id===currentUser.id&&currentProfile?.role==='veterinaire'&&currentProfile?.is_verified===true;
-   const canUpdateLegacy=r.consultation_mode!=='video'&&(currentProfile?.role==='admin'||r.assigned_professional_id===currentUser.id);
+   const canUpdate=currentProfile?.role==='admin'||r.assigned_professional_id===currentUser.id;
    const statusBtns=document.querySelector('#ivcInboxModal .ivc-inbox-chat > div[style*="display:flex"]');
-   if(statusBtns){statusBtns.style.display=(canRespond||canUpdateLegacy)?'flex':'none';const buttons=statusBtns.querySelectorAll('button');if(buttons[2])buttons[2].style.display=canRespond?'none':'';}
+   if(statusBtns)statusBtns.style.display=canUpdate?'flex':'none';
    let callBtn=document.getElementById('ivcJoinCallBtn');
    if(callBtn)callBtn.remove();
-   if(r.request_type==='veterinary'&&r.consultation_mode==='video'&&r.status==='accepted'&&(r.owner_id===currentUser.id||r.assigned_professional_id===currentUser.id)){
+   if(r.consultation_mode==='video'&&r.status==='accepted'&&(r.owner_id===currentUser.id||r.assigned_professional_id===currentUser.id||currentProfile?.role==='admin')){
     callBtn=document.createElement('button');callBtn.id='ivcJoinCallBtn';callBtn.type='button';callBtn.className='ivc-account-btn';callBtn.style.marginTop='12px';callBtn.textContent='Rejoindre l’appel vidéo';callBtn.onclick=()=>window.ivcJoinVideoCall(r.id);msgs.parentElement.appendChild(callBtn);
    }
   }catch(err){list.innerHTML='<p class="ivc-demo-note">Erreur de lecture : '+esc(err.message||err)+'</p>';msgs.innerHTML=''}
@@ -1507,33 +1530,22 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
   const map={'Acceptée':'accepted','Refusée':'refused','Date proposée':'date_proposed'};
   const dbStatus=map[status];if(!dbStatus)return;
   try{
-   const {data:target,error:lookupError}=await client.from('requests').select('request_type,consultation_mode').eq('id',selectedRequest).single();
-   if(lookupError)throw lookupError;
-   if(target.request_type==='veterinary'&&target.consultation_mode==='video'){
-    if(!['accepted','refused'].includes(dbStatus))throw new Error('Pour une consultation vidéo, le vétérinaire peut accepter ou refuser la demande.');
-    const {error}=await client.rpc('ivc_respond_to_video_request',{p_request_id:selectedRequest,p_response:dbStatus});
-    if(error)throw error;
-    await client.from('messages').insert({request_id:selectedRequest,sender_id:currentUser.id,body:'Réponse du vétérinaire : '+status});
-    notice(dbStatus==='accepted'?'Consultation acceptée. Le client peut maintenant rejoindre l’appel vidéo.':'Demande refusée. L’administration pourra la réaffecter à un autre vétérinaire.');
-   }else{
-    const {error}=await client.from('requests').update({status:dbStatus,updated_at:new Date().toISOString()}).eq('id',selectedRequest);
-    if(error)throw error;
-    await client.from('messages').insert({request_id:selectedRequest,sender_id:currentUser.id,body:'Statut mis à jour : '+status});
-   }
+   const {error}=await client.from('requests').update({status:dbStatus,updated_at:new Date().toISOString()}).eq('id',selectedRequest);
+   if(error)throw error;
+   await client.from('messages').insert({request_id:selectedRequest,sender_id:currentUser.id,body:'Statut mis à jour : '+status});
    await renderInbox();
-  }catch(err){notice('Réponse non enregistrée : '+(err.message||err))}
+  }catch(err){notice('Mise à jour refusée : '+(err.message||err)+'. Vérifie que ce compte est administrateur ou professionnel affecté à cette demande.')}
  }
 
  // Demande de consultation vidéo : choix des paramètres AVANT l'envoi.
  window.ivcOpenVideoRequest=async function(){
   if(!currentUser){notice('Connecte-toi avant de demander une consultation vidéo.');window.ivcOpenAccounts({role:'client',tab:'login'});return}
-  // Le client ne choisit pas de vétérinaire : l’administration affecte la demande.
   const old=document.getElementById('ivcVideoRequestDialog');if(old)old.remove();
   const dlg=document.createElement('div');dlg.id='ivcVideoRequestDialog';dlg.className='ivc-account-layer open';
   dlg.innerHTML=`<div class="ivc-account-modal" role="dialog" aria-modal="true" aria-labelledby="ivcVideoReqTitle">
    <button type="button" class="ivc-account-close" aria-label="Fermer">×</button>
    <h2 id="ivcVideoReqTitle">Préparer votre consultation vidéo</h2>
-   <p>Décrivez votre besoin. L’équipe IVC examinera la demande et affectera un vétérinaire agréé disponible.</p>
+   <p>Décrivez votre besoin. L’administration IVC choisira un vétérinaire agréé et disponible pour vous.</p>
    <form id="ivcVideoRequestForm">
     <label>Animal concerné<input name="animal" required placeholder="Nom et espèce de l’animal"></label>
     <label>Type de consultation<select name="kind" required><option value="">Choisir</option><option>Consultation générale</option><option>Suivi / contrôle</option><option>Conseil nutritionnel</option><option>Urgence / orientation</option></select></label>
@@ -1554,7 +1566,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
     const {data,error}=await client.rpc('ivc_create_video_request',{p_subject:subject,p_description:description,p_animal_type:String(f.get('animal'))});
     if(error)throw error;
     if(!data)throw new Error('La demande a été créée sans identifiant retourné.');
-    dlg.remove();selectedRequest=data;notice('Demande de consultation vidéo enregistrée. L’administration va affecter un vétérinaire agréé disponible. Elle apparaîtra dans la messagerie après actualisation.');window.ivcOpenInbox();await renderInbox();
+    dlg.remove();selectedRequest=data;notice('Demande de consultation vidéo envoyée à l’administration IVC pour affectation d’un vétérinaire agréé. Elle apparaîtra dans la messagerie après actualisation.');window.ivcOpenInbox();await renderInbox();
    }catch(err){notice('Demande non envoyée : '+(err.message||err));button.disabled=false;button.textContent='Envoyer la demande de consultation'}
   };
  };
@@ -1565,14 +1577,13 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
   const panel=document.getElementById('ivcAdminLivePanel');if(!panel)return;
   panel.innerHTML='<p>Chargement des indicateurs et demandes…</p>';
   try{
-   const [profilesRes,requestsRes,messagesRes,vetsRes]=await Promise.all([
+   const [profilesRes,requestsRes,messagesRes]=await Promise.all([
     client.from('profiles').select('id,full_name,role').limit(1000),
     client.from('requests').select('id,owner_id,request_type,consultation_mode,subject,description,assigned_professional_id,status,created_at').order('created_at',{ascending:false}).limit(300),
-    client.from('messages').select('id',{count:'exact',head:true}),
-    client.rpc('ivc_list_veterinarians')
+    client.from('messages').select('id',{count:'exact',head:true})
    ]);
-   if(profilesRes.error)throw profilesRes.error;if(requestsRes.error)throw requestsRes.error;if(vetsRes.error)throw vetsRes.error;
-   const profiles=profilesRes.data||[],requests=requestsRes.data||[],availableVets=vetsRes.data||[],messagesCount=messagesRes.error?null:messagesRes.count;
+   if(profilesRes.error)throw profilesRes.error;if(requestsRes.error)throw requestsRes.error;
+   const profiles=profilesRes.data||[],requests=requestsRes.data||[],messagesCount=messagesRes.error?null:messagesRes.count;
    const count=(fn)=>requests.filter(fn).length;
    const fmt=(x)=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
    const label=(r)=>r.request_type==='audit'?'Audit':r.consultation_mode==='video'?'Appel vidéo':'Déploiement vétérinaire';
@@ -1588,7 +1599,7 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
     </div>
     <div class="dash-panel"><h2>Demandes reçues sur la plateforme</h2>
      <div class="table-wrap"><table class="dash-table"><thead><tr><th>Type</th><th>Demande</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
-     <tbody>${requests.map(r=>{const vetName=profiles.find(p=>p.id===r.assigned_professional_id)?.full_name;const canAssign=r.request_type==='veterinary'&&r.consultation_mode==='video'&&r.status==='pending'&&!r.assigned_professional_id;const canRequeue=r.request_type==='veterinary'&&r.consultation_mode==='video'&&r.status==='refused'&&!!r.assigned_professional_id;const assignUi=canRequeue?`<button class="btn btn-line ivc-admin-requeue-btn" data-id="${fmt(r.id)}">Remettre en attente</button>`:(canAssign?`<div class="ivc-admin-assign"><select data-vet-for="${fmt(r.id)}"><option value="">Vétérinaire agréé disponible</option>${availableVets.map(v=>`<option value="${fmt(v.id)}">${fmt(v.full_name||'Vétérinaire IVC')}</option>`).join('')}</select><button class="btn btn-green ivc-admin-assign-btn" data-id="${fmt(r.id)}" ${availableVets.length?'':'disabled'}>Affecter</button></div>`:(r.assigned_professional_id?`<small>Affectée à : ${fmt(vetName||'Vétérinaire')}</small>`:'—'));return `<tr><td>${label(r)}</td><td>${fmt(r.subject)}</td><td>${fmt(r.status)}</td><td>${r.created_at?new Date(r.created_at).toLocaleString('fr-FR'):'—'}</td><td><button class="btn btn-line ivc-admin-open-request" data-id="${fmt(r.id)}">Ouvrir</button>${assignUi}</td></tr>`}).join('')||'<tr><td colspan="5">Aucune demande accessible.</td></tr>'}</tbody></table></div>
+     <tbody>${requests.map(r=>`<tr><td>${label(r)}</td><td>${fmt(r.subject)}</td><td>${fmt(r.status)}</td><td>${r.created_at?new Date(r.created_at).toLocaleString('fr-FR'):'—'}</td><td><button class="btn btn-line ivc-admin-open-request" data-id="${fmt(r.id)}">Ouvrir</button></td></tr>`).join('')||'<tr><td colspan="5">Aucune demande accessible.</td></tr>'}</tbody></table></div>
     </div>
     <div class="dash-panel"><h2>Comptes par rôle</h2><div class="quick-links">
      <span>Clients : ${roleCount('client')}</span><span>Parents d’animaux : ${roleCount('proprietaire')}</span><span>Éleveurs : ${roleCount('eleveur')}</span><span>Vétérinaires : ${roleCount('veterinaire')}</span><span>Auditeurs : ${roleCount('auditeur')}</span>
@@ -1596,8 +1607,6 @@ window.ivcDemoAnalysis=()=>{let d=data();d.analyses.unshift({label:'Analyse labo
     <div class="arow"><button class="btn btn-green" id="ivcAdminRefresh">Actualiser les données</button><button class="btn btn-line" id="ivcAdminInbox">Ouvrir la messagerie IVC</button></div>
     <p class="ivc-account-muted">Les statistiques reflètent uniquement les enregistrements retournés par Supabase et autorisés par les politiques RLS. Les demandes non visibles à ce compte ne sont pas comptabilisées.</p>`;
    panel.querySelectorAll('.ivc-admin-open-request').forEach(b=>b.onclick=async()=>{selectedRequest=b.dataset.id;window.ivcOpenInbox();await renderInbox()});
-   panel.querySelectorAll('.ivc-admin-requeue-btn').forEach(b=>b.onclick=async()=>{b.disabled=true;try{const {error}=await client.rpc('ivc_requeue_refused_video_request',{p_request_id:b.dataset.id});if(error)throw error;notice('Demande remise en attente. Tu peux maintenant affecter un autre vétérinaire.');await window.ivcOpenAdminDashboard()}catch(err){notice('Remise en attente impossible : '+(err.message||err));b.disabled=false}});
-   panel.querySelectorAll('.ivc-admin-assign-btn').forEach(b=>b.onclick=async()=>{const id=b.dataset.id,select=panel.querySelector(`[data-vet-for="${id}"]`),vetId=select?.value;if(!vetId){notice('Sélectionne un vétérinaire agréé disponible.');return}b.disabled=true;b.textContent='Affectation…';try{const {error}=await client.rpc('ivc_assign_professional',{p_request_id:id,p_professional_id:vetId});if(error)throw error;notice('Vétérinaire affecté. La demande apparaît maintenant dans son espace.');await window.ivcOpenAdminDashboard()}catch(err){notice('Affectation impossible : '+(err.message||err));b.disabled=false;b.textContent='Affecter'}});
    panel.querySelector('#ivcAdminRefresh').onclick=window.ivcOpenAdminDashboard;
    panel.querySelector('#ivcAdminInbox').onclick=()=>window.ivcOpenInbox();
   }catch(err){
@@ -2162,7 +2171,7 @@ function pdfDownload(name,title,lines){
  try{var b=makePdf(title,lines),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u)},1500);toast('PDF de démonstration généré : '+name)}
  catch(e){toast('Le téléchargement PDF n’est pas disponible sur cet appareil.')}}
 /* ---------- état de démonstration ---------- */
-var DB={role:null,name:'',cur:null,purchases:[],n:{lab:4,ord:1,dem:3},
+var DB={role:null,name:'',cur:null,n:{lab:4,ord:1,dem:3},
  animals:[{n:'Rex',sp:'Chien',age:'4 ans',w:'28 kg',sex:'Mâle',v:'À renouveler',demo:1},{n:'Minou',sp:'Chat',age:'2 ans',w:'4 kg',sex:'Femelle',v:'À jour',demo:1}],
  rdv:[{d:'Demain 10:00',a:'Rex',t:'Consultation vidéo',v:'Profil de démonstration',s:'Confirmé'},{d:'Jeudi 15:30',a:'Minou',t:'Suivi',v:'Profil de démonstration',s:'En attente'}],
  hist:[{d:'Il y a 2 mois',a:'Rex',m:'Contrôle annuel',c:'Examen général : aucune anomalie signalée (exemple fictif).'},{d:'Il y a 5 mois',a:'Minou',m:'Vaccination',c:'Vaccination effectuée, carnet mis à jour (exemple fictif).'},{d:'Il y a 8 mois',a:'Rex',m:'Déparasitage',c:'Traitement antiparasitaire administré (exemple fictif).'}],
@@ -2585,6 +2594,46 @@ function ivcChooseVet(name, animalType){
 })();
 </script>
 
+
+<style id="ivc-auth-state-colors">
+.rightnav .login{background:#159653!important;color:#fff!important;border-color:#159653!important;transition:background .2s ease,color .2s ease}
+.rightnav .login.ivc-connected{background:#7652b5!important;border-color:#7652b5!important;color:#fff!important}
+.ivc-account-card .ivc-account-btn.alt{margin:5px 5px 5px 0}
+</style>
+<script id="ivc-auth-state-and-access-guard">
+(function(){
+ 'use strict';
+ var login=document.querySelector('.rightnav .login');
+ window.ivcUpdateAuthButton=function(){
+   if(!login)return;
+   var connected=window.IVC_AUTHENTICATED===true;
+   login.classList.toggle('ivc-connected',connected);
+   login.textContent=connected?'Mon espace':'Connexion';
+   login.setAttribute('aria-label',connected?'Ouvrir mon espace IVC':'Connexion à IVC');
+   login.onclick=function(){ if(connected)window.ivcOpenAccounts(); else window.ivcOpenAccounts({role:'client',tab:'login'}); };
+ };
+ window.ivcUpdateAuthButton();
+ // Les espaces de service et les modules de travail sont privés. Accueil et contact restent publics.
+ var originalShowPage=window.showPage;
+ if(typeof originalShowPage==='function'){
+   window.showPage=function(id){
+     var publicPages=['home','contact'];
+     if(!publicPages.includes(String(id)) && window.IVC_AUTH_READY===true && window.IVC_AUTHENTICATED!==true){
+       alert('Crée un compte ou connecte-toi pour accéder aux services IVC.');
+       window.ivcOpenAccounts?.({role:'client',tab:'login'});
+       return;
+     }
+     if(!publicPages.includes(String(id)) && window.IVC_AUTH_READY!==true){
+       alert('Vérification de ta session IVC en cours. Réessaie dans un instant.');
+       return;
+     }
+     return originalShowPage.apply(this,arguments);
+   };
+ }
+ document.addEventListener('DOMContentLoaded',window.ivcUpdateAuthButton);
+})();
+</script>
+
 </body></html>
 
 <style id="ivc-corrections-phases-2026">
@@ -2844,9 +2893,9 @@ input,select,textarea,button{max-width:100%}
    if(!callUser?.id)throw new Error('Connecte-toi à ton compte IVC avant de rejoindre la consultation.');
    const {data:r,error}=await rtcClient.from('requests').select('id,owner_id,assigned_professional_id,request_type,consultation_mode,status').eq('id',requestId).single();
    if(error)throw error;
-   if(r.request_type!=='veterinary'||r.consultation_mode!=='video')throw new Error('Cette demande n’est pas une consultation vétérinaire vidéo.');
+   if(r.consultation_mode!=='video')throw new Error('Cette demande n’est pas une consultation vidéo.');
    if(!['accepted','in_progress'].includes(r.status))throw new Error('La consultation doit être acceptée avant de rejoindre l’appel.');
-   if(callUser.id!==r.owner_id&&callUser.id!==r.assigned_professional_id)throw new Error('Seul le client demandeur et le vétérinaire affecté peuvent rejoindre cet appel.');
+   if(callUser.id!==r.owner_id&&callUser.id!==r.assigned_professional_id&&ctx.profile?.role!=='admin')throw new Error('Ce compte n’est pas autorisé à rejoindre cet appel.');
    if(!navigator.mediaDevices?.getUserMedia)throw new Error('Caméra et microphone indisponibles. Ouvre IVC en HTTPS dans Chrome.');
    openRoomCore();setStatus('Connexion sécurisée à LiveKit…');note('Vérification de la consultation et préparation de la salle vidéo.');
    const {data:tokenData,error:tokenError}=await rtcClient.functions.invoke('ivc-livekit-token',{body:{request_id:requestId}});
