@@ -2162,7 +2162,7 @@ function pdfDownload(name,title,lines){
  try{var b=makePdf(title,lines),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u)},1500);toast('PDF de démonstration généré : '+name)}
  catch(e){toast('Le téléchargement PDF n’est pas disponible sur cet appareil.')}}
 /* ---------- état de démonstration ---------- */
-var DB={role:null,name:'',cur:null,n:{lab:4,ord:1,dem:3},
+var DB={role:null,name:'',cur:null,purchases:[],n:{lab:4,ord:1,dem:3},
  animals:[{n:'Rex',sp:'Chien',age:'4 ans',w:'28 kg',sex:'Mâle',v:'À renouveler',demo:1},{n:'Minou',sp:'Chat',age:'2 ans',w:'4 kg',sex:'Femelle',v:'À jour',demo:1}],
  rdv:[{d:'Demain 10:00',a:'Rex',t:'Consultation vidéo',v:'Profil de démonstration',s:'Confirmé'},{d:'Jeudi 15:30',a:'Minou',t:'Suivi',v:'Profil de démonstration',s:'En attente'}],
  hist:[{d:'Il y a 2 mois',a:'Rex',m:'Contrôle annuel',c:'Examen général : aucune anomalie signalée (exemple fictif).'},{d:'Il y a 5 mois',a:'Minou',m:'Vaccination',c:'Vaccination effectuée, carnet mis à jour (exemple fictif).'},{d:'Il y a 8 mois',a:'Rex',m:'Déparasitage',c:'Traitement antiparasitaire administré (exemple fictif).'}],
