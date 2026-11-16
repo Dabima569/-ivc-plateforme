@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tableau de bord – Ivoire Vet Consulting</title>
+<style>
+:root{--bg:#f6f8f7;--card:#fff;--ink:#12261c;--mut:#5f7167;--line:#e2e9e5;--g:#10b981;--gd:#0a8f64;--mint:#e3f7ee;--box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1813;--card:#15241c;--ink:#e8f2ec;--mut:#9db1a5;--line:#25392e;--mint:#1b3a2c}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.side{position:fixed;inset:0 auto 0 0;width:270px;background:var(--card);border-right:1px solid var(--line);padding:18px 14px;overflow:auto;z-index:30;transition:transform .2s}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 6px 16px;font-weight:800;font-size:19px;line-height:1.15}
+.brand span{font-size:30px}.brand small{display:block;font-weight:500;color:var(--mut);font-size:13px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;border:0;background:none;text-align:left;padding:12px;border-radius:10px;font-size:16px;margin:2px 0;color:var(--ink)}
+.nav button:hover{background:var(--mint)}.nav button.on{background:var(--g);color:#fff;font-weight:700}
+.nav .sub{padding:8px 12px 8px 42px;font-size:15px}.nav .chev{margin-left:auto;transition:.2s}
+.sb{background:var(--mint);border-radius:12px;padding:13px;margin-top:14px;font-size:14px}.sb b{display:block;font-size:15px}
+.main{margin-left:270px;min-width:0}
+.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);height:74px;display:flex;align-items:center;gap:14px;padding:0 22px}
+.burger{display:none;border:0;background:none;font-size:26px}
+.search{flex:1;max-width:460px;border:0;border-radius:26px;background:var(--bg);padding:13px 20px;font-size:16px;min-width:0}
+.sp{flex:1}
+.ibtn{position:relative;border:0;background:none;font-size:26px}
+.ibtn b{position:absolute;top:-5px;right:-7px;background:#e11d48;color:#fff;border-radius:50%;font-size:11px;width:20px;height:20px;display:grid;place-items:center}
+.me{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;font-size:15px}
+.av{width:50px;height:50px;border-radius:50%;background:var(--mint) center/cover no-repeat;display:grid;place-items:center;font-size:24px;border:2px dashed var(--g);flex:none}
+.av.has{border:2px solid var(--g)}
+.pop{position:absolute;right:20px;top:68px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px #0003;min-width:270px;max-width:92vw;z-index:40;display:none;padding:6px}
+.pop.show{display:block}.pop button,.pop div{display:block;width:100%;text-align:left;border:0;background:none;padding:11px 12px;border-radius:8px;font-size:15px}.pop button:hover{background:var(--mint)}.pop .nt{border-bottom:1px solid var(--line)}
+.wrap{padding:22px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.hd h1{margin:0;font-size:30px}.hd p{margin:2px 0 0;color:var(--mut);font-size:16px}
+.per{display:flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
+.per button{border:0;background:none;padding:8px 14px;border-radius:8px;font-size:15px;color:var(--mut)}.per .s{background:var(--g);color:#fff;font-weight:700}
+.grid{display:grid;gap:14px;margin-bottom:14px}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.st{border:1px solid var(--line);background:var(--mint);border-radius:14px;padding:18px;display:flex;justify-content:space-between;gap:10px;min-height:120px}
+.st small{font-size:15px;color:var(--mut)}.st strong{display:block;font-size:38px;line-height:1.2}.st em{font-style:normal;font-size:14px;color:var(--gd);font-weight:700}
+.st .ic{width:46px;height:46px;border-radius:12px;background:#10b98133;display:grid;place-items:center;font-size:24px;flex:none}
+.st:nth-child(3){background:#fdf3df}.st:nth-child(3) .ic{background:#f59e0b33}
+.r1{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}.r2{grid-template-columns:1.4fr 1fr 1fr}
+.pn{background:var(--card);border:1px solid var(--line);border-radius:14px;min-width:0;overflow:hidden}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:16px 18px 8px}.ph h2{margin:0;font-size:19px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:14px}.lg span:before,.pl span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:6px}
+.chart{padding:6px 14px 14px}.chart svg{width:100%;height:auto;display:block}
+.donut{display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:14px;padding:16px 16px 24px}
+.dn{width:160px;height:160px;border-radius:50%;background:conic-gradient(#10b981 0 42%,#1682df 42% 70%,#6665d8 70% 88%,#f59a22 88% 100%);display:grid;place-items:center}
+.dn div{width:104px;height:104px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center}.dn b{font-size:23px}
+.pl{display:grid;gap:12px;font-size:15px}.pl span{display:flex;justify-content:space-between;gap:16px}
+.qa{padding:0 16px 16px;display:grid;gap:8px}.qa button{border:1px solid var(--line);background:var(--mint);border-radius:10px;padding:13px;text-align:left;font-size:16px;font-weight:600;display:flex;gap:10px}.qa button:hover{border-color:var(--g)}
+.cnt{background:#e11d48;color:#fff;border-radius:50%;min-width:24px;height:24px;display:inline-grid;place-items:center;font-size:13px;margin-left:6px;padding:0 5px}
+.lk{border:0;background:none;color:var(--gd);font-weight:700;font-size:15px}
+.rq{display:grid;grid-template-columns:48px 1fr auto auto;gap:12px;align-items:center;padding:11px 18px;border-top:1px solid var(--line);font-size:15px}
+.th{width:48px;height:48px;border-radius:12px;background:var(--mint);display:grid;place-items:center;font-size:25px}.rq b{display:block}.rq small,.tl small{color:var(--mut);font-size:13px}
+.b1,.b2{border-radius:9px;padding:8px 13px;font-size:15px;font-weight:700;border:1px solid var(--g)}.b1{background:var(--g);color:#fff}.b2{background:var(--mint);color:var(--gd)}
+.tl{padding:6px 18px 16px;display:grid;gap:12px}.tl div{display:flex;gap:11px;align-items:center;font-size:15px}.tl .ia{width:42px;height:42px;border-radius:50%;background:var(--mint);display:grid;place-items:center;font-size:22px;flex:none}
+.ki{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 14px 16px}.ki div{background:var(--mint);border-radius:12px;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:14px;padding:6px}.ki b{font-size:25px}
+.ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:14px;color:var(--mut);font-size:14px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 16px;border-top:1px solid var(--line);font-size:15px;white-space:nowrap}th{font-size:13px;color:var(--mut);border:0}
+.tg{border-radius:20px;padding:4px 11px;font-size:13px;font-weight:700;background:var(--mint);color:var(--gd)}.tg.w{background:#fdf0d5;color:#9a5b08}.tg.x{background:#fde4e4;color:#b42318}
+.sx{overflow:auto}.sbar{padding:6px 18px 12px}.sbar input{width:100%;max-width:380px;border:1px solid var(--line);border-radius:10px;padding:11px 14px;background:var(--bg)}
+.mb{position:fixed;inset:0;background:#0a1d1288;display:none;align-items:center;justify-content:center;padding:14px;z-index:60}.mb.show{display:flex}
+.md{background:var(--card);border-radius:16px;width:min(520px,100%);max-height:88vh;overflow:auto;padding:22px}.md h3{margin:0 0 12px;font-size:21px}
+.fd{display:grid;gap:6px;margin:12px 0;font-size:15px;font-weight:600}.fd select,.fd textarea{border:1px solid var(--line);border-radius:9px;padding:11px;background:var(--bg)}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.ac{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0f3a28;color:#fff;padding:12px 18px;border-radius:10px;display:none;z-index:90}
+.lgg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:6px 18px 4px}.lgb{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:15px}.lgb b{font-size:26px}.lgb.off{opacity:.4}
+.r1b{grid-template-columns:1fr 1fr}.ph{flex-wrap:wrap}.st .sub{font-size:13px;margin-top:2px}.st[data-v],.ki div[data-v]{cursor:pointer}.chart{padding:4px 12px 12px}
+@media(max-width:700px){.lgg{grid-template-columns:1fr 1fr}}
+@media(max-width:1180px){.stats{grid-template-columns:1fr 1fr}.r1{grid-template-columns:1fr}.r2{grid-template-columns:1fr 1fr}.r2 .pn:last-child{grid-column:1/-1}}
+@media(max-width:520px){.stats{grid-template-columns:1fr 1fr;gap:10px}.st{padding:12px;min-height:0}.st strong{font-size:26px}.st .ic{display:none}.wrap{padding:12px}.lgg{grid-template-columns:1fr}.hd h1{font-size:24px}.top{padding:0 10px;gap:8px}.donut{justify-content:center}}
+@media(max-width:860px){.side{transform:translateX(-105%)}.side.open{transform:none}.main{margin-left:0}.burger{display:block}.r2{grid-template-columns:1fr}.me .n{display:none}.rq{grid-template-columns:48px 1fr auto}.rq .dt{display:none}.wrap{padding:14px}.hd h1{font-size:25px}.top{padding:0 12px}}
+</style></head><body>
+<aside class="side" id="side">
+<div class="brand"><span>🐾</span><div>IVC<small>Ivoire Vet Consulting</small></div></div>
+<nav class="nav" id="nav">
+<button data-v="dash" class="on">🏠 Tableau de bord</button>
+<button data-tg="usr">👥 Gestion des utilisateurs <i class="chev" id="chev">⌄</i></button>
+<div id="usr"><button class="sub" data-v="clients">Clients</button><button class="sub" data-v="eleveurs">Éleveurs</button><button class="sub" data-v="vets">Vétérinaires</button><button class="sub" data-v="ent">Entreprises vétérinaires</button></div>
+<button data-v="demandes">📋 Demandes &amp; Consultations</button><button data-v="audits">🧾 Demandes d’audit</button><button data-v="rdv">📅 Rendez-vous</button><button data-v="boutique">🛒 Boutique &amp; ventes</button><button data-v="labo">🧪 Analyses &amp; Laboratoires</button><button data-v="etab">🏥 Établissements</button><button data-v="suivi">💉 Suivi sanitaire</button><button data-v="rapports">📊 Rapports &amp; Statistiques</button><button data-v="params">⚙️ Paramètres système</button><button data-v="aide">🛟 Assistance IVC</button>
+</nav>
+<div class="sb"><b>🎧 Support Administratif</b>+225 07 07 07 07 07<br>admin@ivc.ci</div>
+</aside>
+<div class="main">
+<header class="top">
+<button class="burger" id="bg" aria-label="Menu">☰</button>
+<input class="search" id="q" placeholder="🔍 Rechercher un utilisateur, une demande…" aria-label="Recherche">
+<div class="sp"></div>
+<button class="ibtn" id="bell" aria-label="Notifications">🔔<b id="nc">12</b></button>
+<button class="me" id="me"><span class="av" id="av">📷</span><span class="n"><b>Administrateur IVC</b><br>Administrateur ⌄</span></button>
+<div class="pop" id="pn"></div>
+<input type="file" id="file" accept="image/*" hidden>
+</header>
+<div class="wrap" id="app"></div>
+</div>
+<div class="mb" id="mb"><div class="md" id="md"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+var $=function(s){return document.querySelector(s)},app=$("#app"),cur="dash",per=0,qv="";
+var IC={video:"🎥",analyse:"🧪",adhesion:"🏢",audit:"📋"};
+var R=[["R1","Consultation vidéo – Rex","Client : Koffi M.","video","12/11 – 14:30","w"],["R2","Analyse – Bovin #BV-024","Éleveur : Kouadio A.","analyse","12/11 – 16:00","w"],["R3","Adhésion entreprise","Clinique Prestige","adhesion","12/11","w"],["R4","Consultation vidéo – Mina","Client : Marie K.","video","13/11 – 09:00","w"],["R5","Analyse – Volailles #PL-210","Éleveur : Adama K.","analyse","13/11 – 11:00","w"],["R6","Audit biosécurité","Ferme des Lagunes","audit","14/11","w"],["R7","Adhésion vétérinaire","Dr Yao Koffi","adhesion","14/11","w"]];
+var ST={w:"En attente",a:"Acceptée",x:"Refusée"};
+var U=[["Koffi M.","clients","Abidjan","a"],["Marie Kouassi","clients","Bouaké","a"],["Yao Aka","clients","Agnibilékrou","a"],["Kouadio A.","eleveurs","Abengourou","a"],["Adama Koné","eleveurs","Daloa","a"],["Ferme des Lagunes","eleveurs","Dabou","a"],["Dr Mensah","vets","Abidjan","a"],["Dr Awa N’Guessan","vets","Abidjan","a"],["Dr Yao Koffi","vets","Anyama","w"],["Dr Mariam Traoré","vets","Bingerville","w"],["Clinique Prestige","ent","Abidjan","a"],["Clinique Horizon","ent","Yamoussoukro","a"],["Agro CI","ent","Abidjan","w"]];
+var ACT=[["👨🏾‍⚕️","Nouvel utilisateur : Dr. Mensah","Il y a 2 min"],["🎥","Consultation acceptée : Rex","Il y a 5 min"],["🧪","Résultat d’analyse validé · Bovin #BV-024","Il y a 12 min"],["🏢","Nouvelle entreprise inscrite : Clinique Horizon","Il y a 20 min"]];
+var NT=["Nouvelle demande d’appel vidéo : Rex","Analyse Bovin #BV-024 prête à valider","Clinique Prestige demande son adhésion","Dr Yao Koffi attend son agrément"];
+var T={labo:["Analyses & Laboratoires",["Dossier","Échantillon","Analyse","Statut"],[["LAB-026","Prélèvement avicole","Bactériologie","En analyse"],["LAB-025","Échantillon bovin","Parasitologie","À valider"],["LAB-024","Prélèvement caprin","Sérologie","Résultat transmis"]]],etab:["Établissements",["Nom","Type","Ville","Statut"],[["Clinique Prestige","Clinique","Abidjan","Active"],["Clinique Horizon","Clinique","Yamoussoukro","Active"],["Laboratoire IVC","Laboratoire","Agnibilékrou","Active"]]],suivi:["Suivi sanitaire",["Cheptel","Propriétaire","Action","Échéance"],[["Bovins (45)","Kouadio A.","Vaccination","20/11"],["Volailles (1 200)","Adama Koné","Visite sanitaire","22/11"],["Caprins (30)","Ferme des Lagunes","Déparasitage","25/11"]]]};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},2400)}
+function modal(h){$("#md").innerHTML=h;$("#mb").classList.add("show")}
+function close(){$("#mb").classList.remove("show")}
+function pend(){return R.filter(function(r){return r[5]==="w"})}
+function log(i,t){ACT.unshift([i,t,"À l’instant"]);ACT.length=Math.min(ACT.length,6)}
+function tag(s){return'<span class="tg '+(s==="w"||s==="En attente"?"w":s==="x"?"x":"")+'">'+(ST[s]||s)+'</span>'}
+/* données : source unique de toutes les statistiques (listes d'enregistrements + total par jour) */
+var D=[],AU=[],RV=[],OR=[],hid={},SER=[["c","Consultations","#10b981"],["a","Analyses","#1d6fe0"],["n","Nouveaux utilisateurs","#f59a22"],["au","Demandes d’audit","#8b5cf6"],["rv","Rendez-vous","#ef4444"],["o","Commandes boutique","#0ea5e9"]],MO=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+var NM=["Adama Koné","Marie Kouassi","Ferme des Lagunes","Agro CI","Kouadio A.","Bamba S.","Clinique Prestige","Yao Aka","Pauline Yao","Koffi M."],VT=["Dr Awa N’Guessan","Dr Yao Koffi","Dr Mariam Traoré","Dr Serge Kouamé"],OB=["Audit biosécurité","Évaluation sanitaire","Audit d’exploitation","Conformité sanitaire"],PR=["Aliments volailles","Désinfectant","Stéthoscope","Abreuvoirs et mangeoires","Matériel de laboratoire","Shampooing"];
+var AUS={w:"Nouvelle",c:"En cours",t:"Terminée"},RVS={w:"À confirmer",c:"Confirmé"},ORS={w:"À préparer",c:"Expédiée",t:"Livrée"};
+(function(){var s=7;function r(){s=s*16807%2147483647;return s/2147483647}function pk(a){return a[Math.floor(r()*a.length)]}var end=new Date(2026,10,15);for(var i=364;i>=0;i--){var d=new Date(end);d.setDate(end.getDate()-i);var g=1+(364-i)/364*.6,w=d.getDay()%6===0?.6:1,n=Math.round((18+r()*10)*g*w),cl=Math.round(n*.5),el=Math.round(n*.32),e=r()<.35?1:0,v=Math.max(0,n-cl-el-e),au=Math.round((.8+r()*1.3)*g*w),rv=Math.round((3+r()*3)*g*w),o=Math.round((2+r()*3)*g*w),rev=0,j;
+for(j=0;j<au;j++)AU.push({id:"AUD-"+(AU.length+1),d:d,who:pk(NM),obj:pk(OB),st:i<3?"w":i<10?"c":"t"});
+for(j=0;j<rv;j++)RV.push({id:"RDV-"+(RV.length+1),d:d,who:pk(NM),vet:pk(VT),st:i<=1?"w":"c"});
+for(j=0;j<o;j++){var am=Math.round((5+r()*55)*2)*500;rev+=am;OR.push({id:"CMD-"+(OR.length+1),d:d,who:pk(NM),prod:pk(PR),amt:am,st:i<=2?"w":i<=5?"c":"t"})}
+D.push({d:d,c:Math.round((15+r()*8)*g*w),a:Math.round((5+r()*4)*g*w),n:cl+el+v+e,cl:cl,el:el,v:v,e:e,au:au,rv:rv,o:o,rev:rev})}})();
+function sum(a,k){return a.reduce(function(s,x){return s+x[k]},0)}
+function fm(n){return n.toLocaleString("fr-FR")}
+function dm(d){return("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)}
+function bins(){var n=[30,91,360][per],z=[1,7,30][per],sl=D.slice(-n),B=[];for(var i=0;i<sl.length;i+=z){var c=sl.slice(i,i+z);B.push({l:per===2?MO[c[c.length-1].d.getMonth()]:dm(c[0].d),c:sum(c,"c"),a:sum(c,"a"),n:sum(c,"n"),au:sum(c,"au"),rv:sum(c,"rv"),o:sum(c,"o")})}return B}
+function nice(v){var p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+function chart(){var el=$("#ch");if(!el)return;var B=bins(),W=Math.max(300,el.parentNode.clientWidth-24),nr=W<560,H=nr?300:395,fs=nr?11:14,x0=nr?42:70,x1=W-14,y0=14,y1=H-48,mx=0,h="";el.setAttribute("viewBox","0 0 "+W+" "+H);
+SER.forEach(function(s){if(!hid[s[0]])B.forEach(function(b){if(b[s[0]]>mx)mx=b[s[0]]})});mx=nice(mx||1);
+function X(i){return x0+i*(x1-x0)/(B.length-1)}function Y(v){return y1-v/mx*(y1-y0)}
+for(var k=0;k<=4;k++){var v=mx*k/4;h+='<line x1="'+x0+'" x2="'+x1+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="currentColor" opacity=".12"/><text x="'+(x0-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="'+fs+'" fill="currentColor" opacity=".7">'+fm(Math.round(v))+'</text>'}
+SER.forEach(function(s){if(hid[s[0]])return;var p=B.map(function(b,i){return X(i)+","+Y(b[s[0]])}).join(" ");h+='<polyline points="'+p+'" fill="none" stroke="'+s[2]+'" stroke-width="'+(nr?2.2:3)+'" stroke-linejoin="round"/>';B.forEach(function(b,i){h+='<circle cx="'+X(i)+'" cy="'+Y(b[s[0]])+'" r="'+(B.length>20?(nr?2.2:3.2):(nr?3.5:5))+'" fill="#fff" stroke="'+s[2]+'" stroke-width="2"><title>'+b.l+" · "+s[1]+" : "+fm(b[s[0]])+'</title></circle>'})});
+var st=B.length>14?(nr?6:3):(nr&&B.length>9?2:1);B.forEach(function(b,i){if(i%st===0)h+='<text x="'+X(i)+'" y="'+(H-20)+'" text-anchor="middle" font-size="'+fs+'" fill="currentColor" opacity=".7">'+b.l+'</text>'});
+el.innerHTML=h}
+var rz;window.addEventListener("resize",function(){clearTimeout(rz);rz=setTimeout(chart,120)});
+/* views */
+function dash(){var p=pend(),pn=[30,91,360][per],cu=D.slice(-pn),pv=per<2?D.slice(-2*pn,-pn):null,PL=["30 derniers jours","3 derniers mois","12 derniers mois"][per];
+function dl(k,all){var a=sum(cu,k),b=pv?sum(pv,k):all?sum(D,k)-a:0;if(!b)return"";var x=Math.round((all?a/b:(a-b)/b)*100);return'<em style="color:'+(x>=0?"var(--gd)":"#b42318")+'">'+(x>=0?"↑ +":"↓ ")+x+"%</em>"}
+var B=bins(),pf=[["cl","Clients","#10b981"],["el","Éleveurs","#1682df"],["v","Vétérinaires","#6665d8"],["e","Entreprises","#f59a22"]],pt=pf.map(function(x){return sum(D,x[0])}),T=pt.reduce(function(a,b){return a+b},0),acc=0,cg=pf.map(function(x,i){var s=acc;acc+=pt[i]/T*100;return x[2]+" "+s+"% "+acc+"%"}).join(",");
+app.innerHTML='<div class="hd"><div><h1>Tableau de bord</h1><p>Du '+cu[0].d.toLocaleDateString("fr-FR")+' au '+cu[cu.length-1].d.toLocaleDateString("fr-FR")+' · '+PL+'</p></div><div class="per" id="per">'+["30 jours","3 mois","1 an"].map(function(t,i){return'<button data-p="'+i+'" class="'+(i===per?"s":"")+'">'+t+'</button>'}).join("")+'</div></div>'
++'<div class="grid stats"><div class="st"><div><small>Utilisateurs inscrits</small><strong>'+fm(sum(D,"n"))+'</strong>'+dl("n",1)+'</div><div class="ic">👥</div></div><div class="st"><div><small>Consultations ('+PL+')</small><strong>'+fm(sum(cu,"c"))+'</strong>'+dl("c")+'</div><div class="ic">🩺</div></div><div class="st"><div><small>Analyses ('+PL+')</small><strong>'+fm(sum(cu,"a"))+'</strong>'+dl("a")+'</div><div class="ic">🧪</div></div><div class="st"><div><small>Entreprises vétérinaires</small><strong>'+fm(sum(D,"e"))+'</strong>'+dl("e",1)+'</div><div class="ic">🏢</div></div></div>'
++'<div class="grid stats"><div class="st" data-v="audits"><div><small>Demandes d’audit</small><strong>'+fm(sum(cu,"au"))+'</strong>'+dl("au")+'<small class="sub">'+AU.filter(function(x){return x.st==="w"}).length+' à traiter</small></div><div class="ic">🧾</div></div><div class="st" data-v="rdv"><div><small>Rendez-vous</small><strong>'+fm(sum(cu,"rv"))+'</strong>'+dl("rv")+'<small class="sub">'+RV.filter(function(x){return x.st==="w"}).length+' à confirmer</small></div><div class="ic">📅</div></div><div class="st" data-v="boutique"><div><small>Commandes boutique</small><strong>'+fm(sum(cu,"o"))+'</strong>'+dl("o")+'<small class="sub">'+OR.filter(function(x){return x.st==="w"}).length+' à préparer</small></div><div class="ic">🛒</div></div><div class="st" data-v="boutique"><div><small>Ventes boutique</small><strong style="font-size:30px">'+fm(sum(cu,"rev"))+' FCFA</strong>'+dl("rev")+'</div><div class="ic">💰</div></div></div>'
++'<div class="pn" style="margin-bottom:14px"><div class="ph"><h2>Activité globale</h2></div><div class="lgg">'+SER.map(function(s){var k=s[0];return'<button class="lgb'+(hid[k]?" off":"")+'" data-a="ser" data-s="'+k+'" style="border-left:5px solid '+s[2]+'">'+s[1]+'<b>'+fm(sum(cu,k))+'</b>'+dl(k)+'</button>'}).join("")+'</div><div class="chart"><svg id="ch" viewBox="0 0 1000 395" role="img" aria-label="Activité globale"></svg></div></div>'
++'<div class="grid r1 r1b"><div class="pn"><div class="ph"><h2>Répartition par profil</h2></div><div class="donut"><div class="dn" style="background:conic-gradient('+cg+')"><div><b>'+fm(T)+'</b>Total</div></div><div class="pl">'+pf.map(function(x,i){return'<span style="--c:'+x[2]+'">'+x[1]+' <b>'+Math.round(pt[i]/T*100)+'%</b></span>'}).join("")+'</div></div></div>'
++'<div class="pn"><div class="ph"><h2>Actions rapides</h2></div><div class="qa"><button data-a="qvideo">🎥 Valider une demande d’appel vidéo</button><button data-a="qvet">🛡️ Approuver un vétérinaire</button><button data-a="qent">🏢 Gérer les entreprises</button><button data-a="qrap">📊 Consulter les rapports</button><button data-a="qnotif">📨 Envoyer une notification</button></div></div></div>'
++'<div class="grid r2"><div class="pn"><div class="ph"><h2>Demandes en attente<span class="cnt">'+p.length+'</span></h2><button class="lk" data-v="demandes">Voir tout →</button></div>'+(p.slice(0,3).map(rq).join("")||'<div class="rq">Aucune demande en attente.</div>')+'</div>'
++'<div class="pn"><div class="ph"><h2>Activité récente</h2><button class="lk" data-a="actall">Voir tout →</button></div><div class="tl">'+ACT.slice(0,4).map(function(a){return'<div><span class="ia">'+a[0]+'</span><span><b>'+esc(a[1])+'</b><br><small>'+a[2]+'</small></span></div>'}).join("")+'</div></div>'
++'<div class="pn"><div class="ph"><h2>Indicateurs clés</h2></div><div class="ki"><div data-v="demandes"><span>📋</span><b>'+p.length+'</b>Demandes en attente</div><div data-v="audits"><span>🧾</span><b>'+AU.filter(function(x){return x.st==="w"}).length+'</b>Audits à traiter</div><div data-v="rdv"><span>📅</span><b>'+RV.filter(function(x){return x.st==="w"}).length+'</b>RDV à confirmer</div><div data-v="boutique"><span>🛒</span><b>'+OR.filter(function(x){return x.st==="w"}).length+'</b>Commandes à préparer</div></div></div></div>'
++'<footer class="ft"><span>🛡️ Ivoire Vet Consulting – Administration | Données de démonstration</span><span><a data-a="about" href="#" style="color:inherit">À propos</a> | <a data-a="priv" href="#" style="color:inherit">Confidentialité</a> | <a data-a="cgu" href="#" style="color:inherit">Conditions d’utilisation</a></span></footer>';
+chart()}
+function rq(r){return'<div class="rq"><div class="th">'+IC[r[3]]+'</div><div><b>'+esc(r[1])+'</b><small>'+esc(r[2])+'</small></div><span class="dt">'+r[4]+'</span><div><button class="b1" data-a="voir" data-id="'+r[0]+'">Voir</button> <button class="b2" data-a="traiter" data-id="'+r[0]+'">Traiter</button></div></div>'}
+var SUB="";function tbl(title,cols,rows,extra){var sb=SUB;SUB="";app.innerHTML='<div class="hd"><div><h1>'+title+'</h1><p>'+(sb||rows.length+" élément(s)")+'</p></div>'+(extra||"")+'</div><div class="pn"><div class="sbar"><input id="f" placeholder="Filtrer…" value="'+esc(qv)+'"></div><div class="sx"><table><thead><tr>'+cols.map(function(c){return"<th>"+c+"</th>"}).join("")+'</tr></thead><tbody>'+rows.map(function(r){return"<tr>"+r.map(function(c){return"<td>"+c+"</td>"}).join("")+"</tr>"}).join("")+'</tbody></table></div></div>';
+var f=$("#f");f.oninput=function(){qv=f.value;var s=qv.toLowerCase();document.querySelectorAll("tbody tr").forEach(function(tr){tr.style.display=tr.textContent.toLowerCase().indexOf(s)>-1?"":"none"})};f.oninput()}
+function view(){var s=qv.toLowerCase();
+if(cur==="dash")return dash();
+if(cur==="demandes")return tbl("Demandes & Consultations",["Demande","Détail","Date","Statut","Action"],R.map(function(r){return["<b>"+esc(r[1])+"</b>",esc(r[2]),r[4],tag(r[5]),r[5]==="w"?'<button class="b1" data-a="voir" data-id="'+r[0]+'">Voir</button> <button class="b2" data-a="traiter" data-id="'+r[0]+'">Traiter</button>':"—"]}));
+if(["clients","eleveurs","vets","ent"].indexOf(cur)>-1){var nm={clients:"Clients",eleveurs:"Éleveurs",vets:"Vétérinaires",ent:"Entreprises vétérinaires"}[cur];
+return tbl(nm,["Nom","Ville","Statut","Action"],U.map(function(u,i){return[u,i]}).filter(function(x){return x[0][1]===cur}).map(function(x){var u=x[0];return["<b>"+esc(u[0])+"</b>",u[2],tag(u[3]),cur==="vets"||cur==="ent"?(u[3]==="w"?'<button class="b1" data-a="appr" data-i="'+x[1]+'">Approuver</button>':'<button class="b2" data-a="susp" data-i="'+x[1]+'">Suspendre</button>'):'<button class="b2" data-a="msg" data-i="'+x[1]+'">Contacter</button>']}))}
+if(cur==="audits"||cur==="rdv"||cur==="boutique"){var K={audits:[AU,AUS,"au","Demandes d’audit",["Référence","Structure","Objet","Date","Statut","Action"],function(x){return[x.id,esc(x.who),x.obj]},{w:"Traiter",c:"Terminer"}],rdv:[RV,RVS,"rv","Rendez-vous",["Référence","Client","Vétérinaire","Date","Statut","Action"],function(x){return[x.id,esc(x.who),x.vet]},{w:"Confirmer"}],boutique:[OR,ORS,"o","Boutique & ventes",["Commande","Client","Article","Montant","Date","Statut","Action"],function(x){return[x.id,esc(x.who),x.prod,fm(x.amt)+" FCFA"]},{w:"Préparer",c:"Livrer"}]}[cur],L=K[0],last=D.slice(-30);
+SUB=fm(L.length)+" au total sur 12 mois · "+fm(L.filter(function(x){return x.st==="w"}).length)+" à traiter · "+fm(sum(last,K[2]))+" sur les 30 derniers jours"+(cur==="boutique"?" · "+fm(sum(last,"rev"))+" FCFA de ventes":"");
+return tbl(K[3],K[4],L.slice(-40).reverse().map(function(x){var a2=K[1][x.st];return K[5](x).concat(cur==="boutique"?[x.d.toLocaleDateString("fr-FR")]:[x.d.toLocaleDateString("fr-FR")]).concat(['<span class="tg'+(x.st==="w"?" w":"")+'">'+a2+'</span>',K[6][x.st]?'<button class="b1" data-a="adv" data-k="'+K[2]+'" data-id="'+x.id+'">'+K[6][x.st]+'</button>':"—"])}))}
+if(T[cur])return tbl(T[cur][0],T[cur][1],T[cur][2]);
+if(cur==="rapports"){app.innerHTML='<div class="hd"><div><h1>Rapports & Statistiques</h1><p>Indicateurs de démonstration</p></div><button class="b1" data-a="print">Imprimer</button></div><div class="grid stats"><div class="st"><div><small>Demandes traitées</small><strong>'+(R.filter(function(r){return r[5]!=="w"}).length+84)+'</strong></div></div><div class="st"><div><small>Utilisateurs</small><strong>12 480</strong></div></div><div class="st"><div><small>Délai moyen</small><strong>2h</strong></div></div><div class="st"><div><small>Satisfaction</small><strong>98%</strong></div></div></div>';return}
+if(cur==="params"){app.innerHTML='<div class="hd"><div><h1>Paramètres système</h1></div></div><div class="pn"><div class="ph"><h2>Apparence et compte</h2></div><div class="qa"><button data-a="photo">📷 Changer la photo d’administrateur</button><button data-a="rmphoto">🗑️ Supprimer la photo</button><button data-a="theme">🌓 Basculer clair / sombre</button></div></div>';return}
+app.innerHTML='<div class="hd"><div><h1>Assistance IVC</h1><p>Support administratif</p></div></div><div class="pn"><div class="ph"><h2>Nous contacter</h2></div><div class="qa"><button data-a="tel">📞 +225 07 07 07 07 07</button><button data-a="mail">✉️ admin@ivc.ci</button></div></div>'}
+function go(v){cur=v;qv="";$("#side").classList.remove("open");document.querySelectorAll("#nav [data-v]").forEach(function(b){b.classList.toggle("on",b.dataset.v===v)});view();scrollTo(0,0)}
+function done(r,s){r[5]=s;var t=(s==="a"?"Demande acceptée : ":"Demande refusée : ")+r[1];log(s==="a"?"✅":"⛔",t);toast(t);close();view()}
+function lst(items,btn,act){modal('<h3>'+btn[0]+'</h3>'+(items.length?items.join(""):'<p>Rien à traiter pour le moment.</p>')+'<div class="ac"><button class="b2" data-a="close">Fermer</button></div>')}
+document.addEventListener("click",function(e){var t=e.target.closest("[data-v],[data-a],[data-p],[data-tg]");if(!t){if(!e.target.closest("#pn,#bell,#me"))$("#pn").classList.remove("show");return}
+if(t.dataset.v)return go(t.dataset.v);
+if(t.dataset.tg){var u=$("#"+t.dataset.tg);u.style.display=u.style.display==="none"?"":"none";$("#chev").textContent=u.style.display?"›":"⌄";return}
+if(t.dataset.p){per=+t.dataset.p;return dash()}
+var a=t.dataset.a,r=R.filter(function(x){return x[0]===t.dataset.id})[0],i=t.dataset.i,u=U[i];e.preventDefault();
+if(a==="ser"){hid[t.dataset.s]=!hid[t.dataset.s];t.classList.toggle("off");chart()}else if(a==="adv"){var ar={au:AU,rv:RV,o:OR}[t.dataset.k],x=ar.filter(function(z){return z.id===t.dataset.id})[0],nx={w:"c",c:"t"}[x.st];if(t.dataset.k==="rv"&&x.st==="c")nx=null;if(nx){x.st=nx;log("✅",x.id+" : statut mis à jour");toast(x.id+" mis à jour");view()}}else if(a==="close")close();
+else if(a==="voir")modal('<h3>'+esc(r[1])+'</h3><p><b>Détail :</b> '+esc(r[2])+'<br><b>Date :</b> '+r[4]+'<br><b>Statut :</b> '+tag(r[5])+'</p><div class="ac"><button class="b2" data-a="close">Fermer</button><button class="b1" data-a="traiter" data-id="'+r[0]+'">Traiter</button></div>');
+else if(a==="traiter")modal('<h3>Traiter la demande</h3><p><b>'+esc(r[1])+'</b><br>'+esc(r[2])+'</p><div class="fd">Réponse<select id="rep"><option value="a">Accepter</option><option value="x">Refuser</option></select></div><div class="fd">Vétérinaire à attribuer<select id="vsel">'+vetOpts()+'</select></div><div class="ac"><button class="b2" data-a="close">Annuler</button><button class="b1" data-a="ok" data-id="'+r[0]+'">Confirmer</button></div>');
+else if(a==="ok")done(r,$("#rep").value);
+else if(a==="qvideo"){var v=pend().filter(function(x){return x[3]==="video"});lst(v.map(function(x){return'<div class="li"><span>'+esc(x[1])+'<br><small>'+x[4]+'</small></span><button class="b1" data-a="okv" data-id="'+x[0]+'">Valider</button></div>'}),["Appels vidéo à valider"])}
+else if(a==="okv")done(r,"a");
+else if(a==="qvet"){var v2=U.map(function(u,i){return[u,i]}).filter(function(x){return x[0][1]==="vets"&&x[0][3]==="w"});lst(v2.map(function(x){return'<div class="li"><span>'+esc(x[0][0])+'<br><small>'+x[0][2]+'</small></span><button class="b1" data-a="appr" data-i="'+x[1]+'">Approuver</button></div>'}),["Vétérinaires à approuver"])}
+else if(a==="appr"){u[3]="a";log("🛡️",u[0]+" approuvé");toast(u[0]+" approuvé");close();view()}
+else if(a==="susp"){u[3]="w";toast(u[0]+" suspendu");view()}
+else if(a==="msg")toast("Message envoyé à "+u[0]);
+else if(a==="qent"){close();go("ent")}else if(a==="qrap")go("rapports");
+else if(a==="qnotif")modal('<h3>Envoyer une notification</h3><div class="fd">Destinataires<select id="dest"><option>Tous les utilisateurs</option><option>Clients</option><option>Éleveurs</option><option>Vétérinaires</option><option>Entreprises</option></select></div><div class="fd">Message<textarea id="txt" rows="4" placeholder="Votre message"></textarea></div><div class="ac"><button class="b2" data-a="close">Annuler</button><button class="b1" data-a="send">Envoyer</button></div>');
+else if(a==="send"){if(!$("#txt").value.trim())return toast("Écrivez un message.");log("📨","Notification envoyée : "+$("#dest").value);toast("Notification envoyée : "+$("#dest").value);close();view()}
+else if(a==="actall")modal('<h3>Activité récente</h3>'+ACT.map(function(x){return'<div class="li"><span>'+x[0]+" "+esc(x[1])+'</span><small>'+x[2]+'</small></div>'}).join("")+'<div class="ac"><button class="b2" data-a="close">Fermer</button></div>');
+else if(a==="about"||a==="priv"||a==="cgu")modal('<h3>'+{about:"À propos",priv:"Confidentialité",cgu:"Conditions d’utilisation"}[a]+'</h3><p>Ivoire Vet Consulting – Agnibilékrou. Contenu de démonstration à compléter avant la mise en production.</p><div class="ac"><button class="b1" data-a="close">Fermer</button></div>');
+else if(a==="print")print();
+else if(a==="photo"){$("#pn").classList.remove("show");$("#file").click()}
+else if(a==="rmphoto"){setAv("");toast("Photo supprimée")}
+else if(a==="theme"){var d=document.documentElement;d.dataset.theme=d.dataset.theme==="light"?"dark":"light";toast("Thème changé")}
+else if(a==="logout")toast("Déconnexion (démonstration)");
+else if(a==="tel"||a==="mail")toast("Contact copié dans la démonstration");
+else if(a==="readall"){NT=[];$("#nc").textContent="0";$("#pn").classList.remove("show");toast("Notifications lues")}
+});
+/* header */
+function setAv(d){var a=$("#av");a.style.backgroundImage=d?"url("+d+")":"";a.textContent=d?"":"📷";a.classList.toggle("has",!!d);try{d?localStorage.setItem("ivc_av",d):localStorage.removeItem("ivc_av")}catch(x){}}
+$("#file").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){setAv(r.result);toast("Photo mise à jour")};r.readAsDataURL(f)};
+try{var sv=localStorage.getItem("ivc_av");if(sv)setAv(sv)}catch(x){}
+$("#bg").onclick=function(){$("#side").classList.toggle("open")};
+$("#bell").onclick=function(){var p=$("#pn");p.innerHTML=(NT.map(function(n){return'<div class="nt">'+esc(n)+'</div>'}).join("")||'<div>Aucune notification.</div>')+'<button data-a="readall">Tout marquer comme lu</button>';p.classList.toggle("show")};
+$("#me").onclick=function(){var p=$("#pn");p.innerHTML='<button data-a="photo">📷 Ajouter / changer ma photo</button><button data-a="rmphoto">🗑️ Supprimer ma photo</button><button data-v="params">⚙️ Paramètres</button><button data-a="logout">↪ Déconnexion</button>';p.classList.toggle("show")};
+$("#q").oninput=function(){var v=this.value.trim();if(!v){return}qv=v;if(cur!=="demandes"&&cur!=="clients"){cur="demandes";document.querySelectorAll("#nav [data-v]").forEach(function(b){b.classList.toggle("on",b.dataset.v==="demandes")});view()}else{$("#f")&&($("#f").value=v,$("#f").oninput())}};
+$("#mb").onclick=function(e){if(e.target===this)close()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")close()});
+view();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.7/dist/livekit-client.umd.js"></script>
+<script id="ivc-supabase">
+/* Clé publique « anon » : prévue pour être visible dans une page. Ne jamais y mettre la clé « service_role ». */
+window.IVC_CONFIG={SUPABASE_URL:'https://eykvnhbkhcelzwbowxqz.supabase.co',SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3ZuaGJraGNlbHp3Ym93eHF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyMjkxNTIsImV4cCI6MjEwOTgwNTE1Mn0.8qQcG6LrpGlPZ4EprEl7rW7HG3x4NALt-5sb5JAOrWE'};
+(function(){var C=window.IVC_CONFIG,ok=!!window.supabase;
+window.IVC={on:ok,db:ok?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY):null,_room:null};
+/* Salle vidéo LiveKit : le jeton vient de la fonction Edge « ivc-livekit-token » (droits vérifiés en base). */
+IVC.room=function(requestId,box,done){
+box.innerHTML='<p>Connexion à la salle…</p>';
+IVC.db.functions.invoke('ivc-livekit-token',{body:{request_id:requestId}}).then(function(r){
+var d=r.data;
+if(r.error||!d||!d.participantToken){box.innerHTML='<p style="color:#b42318">Salle indisponible : '+((r.error&&r.error.message)||(d&&d.error)||'jeton absent')+'</p>';return}
+if(!window.LivekitClient){box.innerHTML='<p style="color:#b42318">Bibliothèque vidéo non chargée.</p>';return}
+var L=window.LivekitClient,room=new L.Room({adaptiveStream:true,dynacast:true});IVC._room=room;
+box.innerHTML='<div style="display:grid;gap:8px"><div id="ivc-remote" style="background:#0a1a12;border-radius:12px;min-height:240px;overflow:hidden;display:grid;place-items:center;color:#cfe;text-align:center;padding:8px">En attente de l’autre participant…</div><video id="ivc-local" autoplay muted playsinline style="width:140px;border-radius:10px;background:#000"></video><div><button id="ivc-leave" style="padding:10px 16px;border:0;border-radius:10px;background:#b42318;color:#fff;font:inherit;font-weight:700;cursor:pointer">Quitter la salle</button></div></div>';
+var rem=box.querySelector('#ivc-remote');
+room.on(L.RoomEvent.TrackSubscribed,function(track){var el=track.attach();el.style.cssText='width:100%;max-height:60vh';if(!rem.dataset.m){rem.textContent='';rem.dataset.m=1}rem.appendChild(el)});
+room.on(L.RoomEvent.TrackUnsubscribed,function(track){track.detach().forEach(function(x){x.remove()})});
+room.on(L.RoomEvent.Disconnected,function(){IVC._room=null;if(done)done()});
+room.connect(d.serverUrl,d.participantToken).then(function(){return room.localParticipant.setCameraEnabled(true)}).then(function(){return room.localParticipant.setMicrophoneEnabled(true)}).then(function(){
+var pub=room.localParticipant.getTrackPublication(L.Track.Source.Camera);if(pub&&pub.track)pub.track.attach(box.querySelector('#ivc-local'))}).catch(function(e){rem.textContent='Connexion impossible : '+e.message});
+box.querySelector('#ivc-leave').onclick=function(){room.disconnect()}})};
+})();
+</script>
+
+<script id="ivc-gate">
+IVC.gate=function(label,test,ready,signupRole){
+var st='padding:10px;border:1px solid #c5d4c9;border-radius:10px;font:inherit';
+var o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#0a4a2a;padding:16px';
+o.innerHTML='<form style="background:#fff;border-radius:16px;padding:22px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;font:15px system-ui,sans-serif;color:#14261c"><h2 style="margin:0;color:#0f6b3a">'+label+'</h2><input name="e" type="email" placeholder="E-mail" required autocomplete="username" style="'+st+'"><input name="p" type="password" placeholder="Mot de passe" required autocomplete="current-password" style="'+st+'">'+(signupRole?'<input name="n" placeholder="Nom complet" autocomplete="name" style="'+st+';display:none">':'')+'<button class="go" style="padding:10px;border:0;border-radius:10px;background:#0f6b3a;color:#fff;font:inherit;font-weight:700;cursor:pointer">Se connecter</button>'+(signupRole?'<button type="button" class="sg" style="background:none;border:0;color:#0f6b3a;font:inherit;font-weight:700;cursor:pointer;text-align:left;padding:0">Pas de compte ? Créer un compte vétérinaire</button>':'')+'<p class="m" style="margin:0;color:#b42318;font-size:13px"></p></form>';
+document.body.appendChild(o);
+var f=o.firstChild,m=f.querySelector('.m');
+function check(){return IVC.db.auth.getUser().then(function(x){var u=x.data&&x.data.user;if(!u)return null;
+return IVC.db.from('profiles').select('*').eq('id',u.id).single().then(function(r){var p=r.data,e=!p?'Profil introuvable.':test(p);
+if(e){IVC.db.auth.signOut();m.textContent=e;return null}return p})})}
+function enter(p){o.style.display='none';ready(p)}
+IVC.db.auth.getSession().then(function(s){if(!s.data.session)return;check().then(function(p){if(p)enter(p)})});
+var mode='login',sg=f.querySelector('.sg');
+if(sg)sg.onclick=function(){mode=mode==='login'?'signup':'login';var s=mode==='signup';f.n.style.display=s?'':'none';f.n.required=s;f.querySelector('.go').textContent=s?'Créer mon compte':'Se connecter';sg.textContent=s?'J’ai déjà un compte':'Pas de compte ? Créer un compte vétérinaire';m.textContent='';m.style.color='#b42318'};
+f.onsubmit=function(e){e.preventDefault();m.textContent='';m.style.color='#b42318';
+if(mode==='signup'){IVC.db.auth.signUp({email:f.e.value,password:f.p.value,options:{data:{requested_role:signupRole,full_name:f.n.value}}}).then(function(r){if(r.error){m.textContent=r.error.message;return}IVC.db.auth.signOut();m.style.color='#0f6b3a';m.textContent='Compte créé. Il sera actif après agrément par l’administration IVC. Si un e-mail de confirmation est demandé, confirmez-le d’abord.'});return}
+IVC.db.auth.signInWithPassword({email:f.e.value,password:f.p.value}).then(function(r){if(r.error){m.textContent='E-mail ou mot de passe incorrect.';return}check().then(function(p){if(p)enter(p)})})};
+IVC.logout=function(){if(IVC._room)IVC._room.disconnect();IVC.db.auth.signOut().then(function(){location.reload()})};
+document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-a="logout"]');if(t){e.preventDefault();e.stopPropagation();IVC.logout()}},true);
+};
+</script>
+
+<script id="ivc-admin-supabase">
+IVC.gate('Administration IVC',function(p){return p.role!=='admin'?'Ce compte n’a pas accès à cet espace.':p.is_suspended?'Compte suspendu.':''},function(p){
+ST.p='Attribuée';
+var GRP=function(u){return(u.role==='veterinaire'||u.requested_role==='veterinaire')?'vets':u.role==='eleveur'?'eleveurs':'clients'};
+window.VETS=[];window.UP=[];
+window.vetOpts=function(){return VETS.map(function(v){return'<option value="'+v.id+'">'+esc(v.full_name||'Vétérinaire')+'</option>'}).join('')||'<option value="">Aucun vétérinaire disponible</option>'};
+function hm(s){return new Date(s).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+function stOf(q){return q.status==='pending'?(q.assigned_professional_id?'p':'w'):(q.status==='refused'||q.status==='cancelled')?'x':'a'}
+function load(){
+Promise.all([IVC.db.from('profiles').select('*').order('created_at',{ascending:false}),IVC.db.from('requests').select('*').order('created_at',{ascending:false}),IVC.db.rpc('ivc_list_veterinarians')]).then(function(rs){
+var pr=rs[0],rq=rs[1];
+if(pr.error||rq.error){toast('Erreur : '+((pr.error||rq.error).message));return}
+var nm={};pr.data.forEach(function(u){nm[u.id]=u.full_name});
+R=rq.data.map(function(q){var d=new Date(q.created_at);return[q.id,q.subject,'Client : '+(nm[q.owner_id]||'Client IVC'),q.request_type==='audit'?'audit':(q.consultation_mode==='video'?'video':'audit'),dm(d)+' – '+hm(q.created_at),stOf(q)]});
+var us=pr.data.filter(function(u){return u.role!=='admin'});
+UP=us;U=us.map(function(u){var g=GRP(u);return[u.full_name||'—',g,'—',u.is_suspended?'x':(g==='vets'?(u.role==='veterinaire'&&u.is_verified?'a':'w'):'a')]});
+VETS=rs[2].data||[];
+NT=pend().map(function(x){return'Nouvelle demande : '+x[1]});$('#nc').textContent=NT.length;view()})}
+var _done=window.done;
+window.done=function(r,s){var fin=function(x,t){if(x.error){toast('Erreur : '+x.error.message);return}log(s==='a'?'✅':'⛔',t+' : '+r[1]);toast(t+' : '+r[1]);close();load()};
+if(s==='a'){var sel=document.getElementById('vsel'),vet=sel?sel.value:(VETS[0]&&VETS[0].id);
+if(!vet){toast('Aucun vétérinaire agréé et disponible');return}
+IVC.db.rpc('ivc_admin_assign_veterinary_request',{p_request_id:r[0],p_professional_id:vet}).then(function(x){fin(x,'Demande attribuée')})}
+else IVC.db.rpc('ivc_set_request_status',{p_request_id:r[0],p_status:'refused'}).then(function(x){fin(x,'Demande refusée')})};
+document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-a="appr"]');if(!t)return;
+var i=+t.dataset.i,u=UP[i];if(!u)return;e.preventDefault();e.stopPropagation();
+var step=u.role==='veterinaire'?Promise.resolve({}):IVC.db.rpc('ivc_admin_set_profile_role',{p_profile_id:u.id,p_role:'veterinaire'});
+step.then(function(x){if(x.error)return x;return IVC.db.rpc('ivc_verify_veterinarian',{p_professional_id:u.id,p_is_verified:true})}).then(function(x){
+if(x.error){toast('Erreur : '+x.error.message);return}log('🛡️',(u.full_name||'Vétérinaire')+' approuvé');toast((u.full_name||'Vétérinaire')+' approuvé');close();load()})},true);
+['requests','profiles'].forEach(function(tb){IVC.db.channel('adm-'+tb).on('postgres_changes',{event:'*',schema:'public',table:tb},load).subscribe()});
+setInterval(load,20000);load();
+});
+</script>
+</body></html>
