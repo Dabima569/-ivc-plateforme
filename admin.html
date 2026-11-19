@@ -169,7 +169,7 @@ app.innerHTML='<div class="hd"><div><h1>Tableau de bord</h1><p>Du '+cu[0].d.toLo
 +'<div class="grid r2"><div class="pn"><div class="ph"><h2>Demandes en attente<span class="cnt">'+p.length+'</span></h2><button class="lk" data-v="demandes">Voir tout →</button></div>'+(p.slice(0,3).map(rq).join("")||'<div class="rq">Aucune demande en attente.</div>')+'</div>'
 +'<div class="pn"><div class="ph"><h2>Activité récente</h2><button class="lk" data-a="actall">Voir tout →</button></div><div class="tl">'+ACT.slice(0,4).map(function(a){return'<div><span class="ia">'+a[0]+'</span><span><b>'+esc(a[1])+'</b><br><small>'+a[2]+'</small></span></div>'}).join("")+'</div></div>'
 +'<div class="pn"><div class="ph"><h2>Indicateurs clés</h2></div><div class="ki"><div data-v="demandes"><span>📋</span><b>'+p.length+'</b>Demandes en attente</div><div data-v="audits"><span>🧾</span><b>'+AU.filter(function(x){return x.st==="w"}).length+'</b>Audits à traiter</div><div data-v="rdv"><span>📅</span><b>'+RV.filter(function(x){return x.st==="w"}).length+'</b>RDV à confirmer</div><div data-v="boutique"><span>🛒</span><b>'+OR.filter(function(x){return x.st==="w"}).length+'</b>Commandes à préparer</div></div></div></div>'
-+'<footer class="ft"><span>🛡️ Ivoire Vet Consulting – Administration | Données de démonstration</span><span><a data-a="about" href="#" style="color:inherit">À propos</a> | <a data-a="priv" href="#" style="color:inherit">Confidentialité</a> | <a data-a="cgu" href="#" style="color:inherit">Conditions d’utilisation</a></span></footer>';
++'<footer class="ft"><span>🛡️ Ivoire Vet Consulting – Administration</span><span><a data-a="about" href="#" style="color:inherit">À propos</a> | <a data-a="priv" href="#" style="color:inherit">Confidentialité</a> | <a data-a="cgu" href="#" style="color:inherit">Conditions d’utilisation</a></span></footer>';
 chart()}
 function rq(r){return'<div class="rq"><div class="th">'+IC[r[3]]+'</div><div><b>'+esc(r[1])+'</b><small>'+esc(r[2])+'</small></div><span class="dt">'+r[4]+'</span><div><button class="b1" data-a="voir" data-id="'+r[0]+'">Voir</button> <button class="b2" data-a="traiter" data-id="'+r[0]+'">Traiter</button></div></div>'}
 var SUB="";function tbl(title,cols,rows,extra){var sb=SUB;SUB="";app.innerHTML='<div class="hd"><div><h1>'+title+'</h1><p>'+(sb||rows.length+" élément(s)")+'</p></div>'+(extra||"")+'</div><div class="pn"><div class="sbar"><input id="f" placeholder="Filtrer…" value="'+esc(qv)+'"></div><div class="sx"><table><thead><tr>'+cols.map(function(c){return"<th>"+c+"</th>"}).join("")+'</tr></thead><tbody>'+rows.map(function(r){return"<tr>"+r.map(function(c){return"<td>"+c+"</td>"}).join("")+"</tr>"}).join("")+'</tbody></table></div></div>';
@@ -217,7 +217,7 @@ else if(a==="qent"){close();go("ent")}else if(a==="qrap")go("rapports");
 else if(a==="qnotif")modal('<h3>Envoyer une notification</h3><div class="fd">Destinataires<select id="dest"><option>Tous les utilisateurs</option><option>Clients</option><option>Éleveurs</option><option>Vétérinaires</option><option>Entreprises</option></select></div><div class="fd">Message<textarea id="txt" rows="4" placeholder="Votre message"></textarea></div><div class="ac"><button class="b2" data-a="close">Annuler</button><button class="b1" data-a="send">Envoyer</button></div>');
 else if(a==="send"){toast("Aucun service de notification globale n’est configuré dans Supabase.");}
 else if(a==="actall")modal('<h3>Activité récente</h3>'+ACT.map(function(x){return'<div class="li"><span>'+x[0]+" "+esc(x[1])+'</span><small>'+x[2]+'</small></div>'}).join("")+'<div class="ac"><button class="b2" data-a="close">Fermer</button></div>');
-else if(a==="about"||a==="priv"||a==="cgu")modal('<h3>'+{about:"À propos",priv:"Confidentialité",cgu:"Conditions d’utilisation"}[a]+'</h3><p>Ivoire Vet Consulting – Agnibilékrou. Contenu de démonstration à compléter avant la mise en production.</p><div class="ac"><button class="b1" data-a="close">Fermer</button></div>');
+else if(a==="about"||a==="priv"||a==="cgu")modal('<h3>'+{about:"À propos",priv:"Confidentialité",cgu:"Conditions d’utilisation"}[a]+'</h3><p>Ivoire Vet Consulting – Agnibilékrou.</p><div class="ac"><button class="b1" data-a="close">Fermer</button></div>');
 else if(a==="print")print();
 else if(a==="photo"){$("#pn").classList.remove("show");$("#file").click()}
 else if(a==="rmphoto"){setAv("");if(ivcClient)ivcClient.rpc("ivc_set_my_avatar",{p_avatar:null});toast("Photo supprimée")}
@@ -354,6 +354,85 @@ print:function(h){var o=document.getElementById('ivci-print');if(o)o.remove();o=
 };
 var s=document.createElement('style');s.textContent='.ivci-f{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c9d5cf;border-radius:10px;font:inherit;background:#fff;color:#111}.ivci-row{display:grid;gap:6px;margin:8px 0;padding:10px;border:1px solid #e2e8e4;border-radius:12px;text-align:left}.ivci-g{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ivci-add{border:1px dashed #159653;background:#f1faf5;color:#0b6b3a;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit}#ivci-form{max-height:62vh;overflow:auto;text-align:left;padding-right:4px}#ivci-form h4{margin:14px 0 4px}#ivci-print{display:none}@media print{body>*:not(#ivci-print){display:none!important}#ivci-print{display:block!important}}@media(max-width:560px){.ivci-g{grid-template-columns:1fr}}';document.head.appendChild(s);
 window.IVCI=I;
+})();
+</script>
+<script id="ivc-admin-inbox">
+(function(){
+  var IX={q:[],i:[],n:[],nc:0,err:""},tab="q",loading=false;
+  var STQ={"new":"Nouveau",quoted:"Devis envoyé",confirmed:"Confirmé",cancelled:"Annulé"};
+  var STI={"new":"Nouvelle",processing:"En traitement",assigned:"Affectée",done:"Terminée",cancelled:"Annulée"};
+  var nav=document.getElementById("nav");
+  if(nav&&!nav.querySelector('[data-v="inbox"]')){
+    var b=document.createElement("button");b.setAttribute("data-v","inbox");
+    b.innerHTML='📨 Devis &amp; interventions <span class="nb" id="ninbox" style="display:none;background:#e11d48;color:#fff;border-radius:10px;padding:1px 7px;font-size:12px;margin-left:6px"></span>';
+    var ref=nav.querySelector('[data-v="boutique"]');
+    if(ref&&ref.nextSibling)nav.insertBefore(b,ref.nextSibling);else nav.appendChild(b);
+  }
+  async function load(){
+    var q=await ivcClient.from("quote_requests").select("id,contact_name,phone,city,note,items,status,created_at").order("created_at",{ascending:false}).limit(200);
+    var i=await ivcClient.from("intervention_requests").select("id,full_name,phone,city,access_notes,animal_type,reason,description,status,created_at").order("created_at",{ascending:false}).limit(200);
+    var n=await ivcClient.from("newsletter_subscribers").select("id,email,created_at",{count:"exact"}).order("created_at",{ascending:false}).limit(500);
+    var er=q.error||i.error||n.error;
+    IX.err=er?er.message:"";
+    IX.q=q.data||[];IX.i=i.data||[];IX.n=n.data||[];IX.nc=n.count||IX.n.length;
+    var c=IX.q.filter(function(x){return x.status==="new"}).length+IX.i.filter(function(x){return x.status==="new"}).length;
+    var bd=document.getElementById("ninbox");if(bd){bd.textContent=c;bd.style.display=c?"":"none"}
+  }
+  function sel(t,id,cur,map){
+    return '<select class="ixst" data-t="'+t+'" data-id="'+id+'">'+Object.keys(map).map(function(k){return '<option value="'+k+'"'+(k===cur?" selected":"")+'>'+map[k]+'</option>'}).join("")+'</select>';
+  }
+  function tabs(){
+    function bt(k,l){return '<button class="'+(tab===k?"b1":"b2")+'" data-ix="'+k+'">'+l+'</button>'}
+    return '<div style="display:flex;gap:8px;flex-wrap:wrap">'+bt("q","Devis boutique ("+IX.q.length+")")+bt("i","Interventions ("+IX.i.length+")")+bt("n","Newsletter ("+IX.nc+")")+'</div>';
+  }
+  function inbox(){
+    var rows,cols,title;
+    if(tab==="q"){
+      title="Demandes de devis boutique";cols=["Date","Nom","Téléphone","Ville","Produits demandés","Statut"];
+      rows=IX.q.map(function(x){
+        var it=(Array.isArray(x.items)?x.items:[]).map(function(z){return esc(z.name||"Produit")+" × "+esc(z.quantity||1)}).join(", ");
+        return [ivcFmtDate(x.created_at),esc(x.contact_name),esc(x.phone),esc(x.city),it+(x.note?'<br><small>'+esc(x.note)+'</small>':""),sel("q",x.id,x.status,STQ)];
+      });
+      SUB=IX.q.length+" demande(s) · "+IX.q.filter(function(x){return x.status==="new"}).length+" nouvelle(s)";
+    }else if(tab==="i"){
+      title="Demandes d’intervention sur place";cols=["Date","Nom","Téléphone","Lieu","Animal / motif","Statut"];
+      rows=IX.i.map(function(x){
+        return [ivcFmtDate(x.created_at),esc(x.full_name),esc(x.phone),esc(x.city)+(x.access_notes?'<br><small>'+esc(x.access_notes)+'</small>':""),esc(x.animal_type)+(x.reason?" · "+esc(x.reason):"")+(x.description?'<br><small>'+esc(x.description)+'</small>':""),sel("i",x.id,x.status,STI)];
+      });
+      SUB=IX.i.length+" demande(s) · "+IX.i.filter(function(x){return x.status==="new"}).length+" nouvelle(s)";
+    }else{
+      title="Inscrits à la newsletter";cols=["Date","Adresse e-mail"];
+      rows=IX.n.map(function(x){return [ivcFmtDate(x.created_at),esc(x.email)]});
+      SUB=IX.nc+" inscrit(s)";
+    }
+    if(IX.err)SUB="Erreur de chargement : "+IX.err;
+    tbl(title,cols,rows,tabs());
+  }
+  var _view=window.view;
+  window.view=function(){
+    if(cur!=="inbox")return _view.apply(this,arguments);
+    inbox();
+    if(!loading){loading=true;load().catch(function(e){IX.err=e.message}).then(function(){loading=false;if(cur==="inbox")inbox()})}
+  };
+  var _load=window.ivcLoadAdminData;
+  window.ivcLoadAdminData=async function(){
+    var r=await _load.apply(this,arguments);
+    try{await load()}catch(e){IX.err=e.message}
+    if(cur==="inbox")inbox();
+    return r;
+  };
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("[data-ix]");if(!t)return;
+    tab=t.getAttribute("data-ix");inbox();
+  });
+  document.addEventListener("change",function(e){
+    var t=e.target;if(!t.classList||!t.classList.contains("ixst"))return;
+    var tb=t.getAttribute("data-t")==="q"?"quote_requests":"intervention_requests";
+    ivcClient.from(tb).update({status:t.value}).eq("id",t.getAttribute("data-id")).select("id").then(function(r){
+      toast(r.error?r.error.message:(r.data&&r.data.length?"Statut mis à jour.":"Modification refusée."));
+      return load();
+    }).then(function(){if(cur==="inbox")inbox()}).catch(function(x){toast(x.message)});
+  });
 })();
 </script>
 </body></html>
