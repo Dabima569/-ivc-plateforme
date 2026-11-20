@@ -1739,11 +1739,6 @@ document.addEventListener('DOMContentLoaded', function () {
     try{location.hash='';}catch(e){}
     window.scrollTo(0,lastY);
   }
-  window.ivcCloseViews=closeViews;
-  window.ivcGoHome=function(){
-    closeViews();
-    window.scrollTo(0,0);
-  };
   function openView(id){
     var current=document.querySelector('.ivc-view.is-open');
     if(current&&current.id!==id)viewStack.push(current.id);
@@ -1944,22 +1939,8 @@ document.addEventListener('DOMContentLoaded', function () {
       $('au-pass').setAttribute('autocomplete',mode==='signup'?'new-password':'current-password');
     }
     function clearErrors(){form.querySelectorAll('.ivf-field').forEach(function(f){setErr(f,'')})}
-    window.ivcOpenAuth=async function(m,r){
-      closeMenu();
-      /* Une session active suffit : réutiliser le compte existant et ouvrir
-         son espace, sans afficher une nouvelle inscription/connexion. */
-      var authDb=window.IVC&&window.IVC.db;
-      if(authDb){
-        try{
-          var sessionResult=await authDb.auth.getSession();
-          if(sessionResult.data&&sessionResult.data.session){
-            if(window.ivcOpenMySpace){await window.ivcOpenMySpace();return;}
-          }
-        }catch(sessionError){
-          console.warn('Vérification de la session IVC :',sessionError);
-        }
-      }
-      mode=m||'signup';if(r)role=r;
+    window.ivcOpenAuth=function(m,r){
+      closeMenu();mode=m||'signup';if(r)role=r;
       form.reset();clearErrors();$('au-pass').type='password';$('au-toggle').textContent='Afficher';
       form.hidden=false;done.hidden=true;apply();
       last=document.activeElement;box.hidden=false;box.scrollTop=0;document.body.classList.add('ivc-auth-open');
@@ -2452,47 +2433,7 @@ ov.scrollTop=0}
 function show(){ov.classList.add('on');document.body.classList.add('ivx-lock')}
 function hide(){clearInterval(tm);if(IVC._room)IVC._room.disconnect();stopLive();ov.classList.remove('on');document.body.classList.remove('ivx-lock')}
 function go(v,m){V=v;show();render(m)}
-async function video(){
-  if(window.ivcCdVideo&&window.ivcCdVideo())return;
-  if(S.on){go('wait');return;}
-  var D=window.IVC&&window.IVC.db;
-  if(D){
-    var session=null;
-    try{
-      var sr=await D.auth.getSession();
-      if(sr.error)throw sr.error;
-      session=sr.data&&sr.data.session;
-    }catch(sessionError){
-      console.error('Lecture de la session IVC :',sessionError);
-      alert('Impossible de vérifier votre connexion IVC. Réessayez.');
-      return;
-    }
-    if(session){
-      var pr;
-      try{
-        pr=await D.from('profiles').select('full_name,role,is_verified,is_suspended').eq('id',session.user.id).maybeSingle();
-        if(pr.error)throw pr.error;
-      }catch(profileError){
-        console.error('Lecture du profil IVC :',profileError);
-        alert('Votre session est active, mais votre profil IVC ne peut pas être chargé. Aucune nouvelle inscription ne sera demandée.');
-        return;
-      }
-      var profile=pr.data||{};
-      if(profile.is_suspended){alert('Ce compte est suspendu.');return;}
-      if(profile.role==='admin'||profile.role==='administrateur'){
-        alert('L’espace administration est séparé du site public.');return;
-      }
-      if(profile.role==='veterinaire'&&profile.is_verified!==true){
-        alert('L’accès professionnel sera ouvert après validation par IVC.');return;
-      }
-      S.role=profile.role==='eleveur'?'eleveur':(profile.role==='veterinaire'?'entreprise':'parent');
-      S.name=profile.full_name||session.user.email||'Utilisateur IVC';
-      S.userId=session.user.id;S.sb=true;S.on=true;S.pend=null;
-      go('wait');return;
-    }
-  }
-  S.pend='wait';hide();if(window.ivcOpenAuth)window.ivcOpenAuth('signup');
-}
+function video(){if(window.ivcCdVideo&&window.ivcCdVideo())return;if(S.on)go('wait');else{S.pend='wait';hide();if(window.ivcOpenAuth)window.ivcOpenAuth('signup')}}
 window.ivcStartVideo=video;
 ov.addEventListener('click',function(e){
 var t=e.target.closest('button,[data-act],[data-tab]');if(!t)return;
@@ -3111,22 +3052,7 @@ async function logout(){try{if(db())await db().auth.signOut()}catch(e){}leave()}
 async function openThread(id){var D=db();var q=await D.from('messages').select('sender_id,body,created_at').eq('request_id',id).order('created_at',{ascending:true});if(q.error){alert(q.error.message);return}
  S.thread='<div class="cd-card"><h2>💬 Messagerie IVC</h2>'+((q.data||[]).map(function(m){return '<div class="cd-msg'+(m.sender_id===S.uid?' me':'')+'"><small>'+(m.sender_id===S.uid?'Vous':'IVC / Vétérinaire')+'</small><br>'+esc(m.body)+'</div>'}).join('')||'<p class="cd-note">Aucun message.</p>')+'<textarea id="cd-msg" placeholder="Votre message"></textarea><button class="cd-btn p" style="width:auto" data-send="'+esc(id)+'">Envoyer</button> <button class="cd-btn o" style="display:inline-flex" data-go="msgs">Retour</button></div>';draw()}
 root.addEventListener('click',async function(e){var t=e.target.closest('[data-go],[data-act],[data-out],[data-thread],[data-send],[data-reload],[data-public],[data-pet]');if(!t)return;
- if(t.hasAttribute('data-public')){
-  S.on=false;vStop();hideMine();
-  /* Fermer la page de présentation du rôle qui se trouvait derrière le tableau
-     de bord : le client revient directement à l'accueil public, sans écran vide. */
-  if(window.ivcGoHome){window.ivcGoHome();}
-  else{
-    document.querySelectorAll('.ivc-view').forEach(function(v){v.classList.remove('is-open');});
-    document.body.classList.remove('ivc-view-active');
-    try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}
-    window.scrollTo(0,0);
-  }
-  var menu=document.getElementById('menu'),burger=document.querySelector('.hamb[aria-controls="menu"]');
-  if(menu)menu.classList.remove('is-open');
-  if(burger){burger.setAttribute('aria-expanded','false');burger.setAttribute('aria-label','Ouvrir le menu');}
-  return;
-}
+ if(t.hasAttribute('data-public')){S.on=false;vStop();hideMine();try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}window.scrollTo(0,0);return;}
  if(t.hasAttribute('data-pet')){S.pet=+t.getAttribute('data-pet');draw();return}
  if(t.hasAttribute('data-out')){logout();return}
  if(t.hasAttribute('data-reload')){refresh();return}
@@ -3303,6 +3229,114 @@ window.ivxEnter=function(r,n,sb){var self=this,a=arguments;
   });
 })();
 </script>
+
+<script id="ivc-direct-public-navigation">
+(function () {
+  function closeAuthIfOpen() {
+    var auth = document.getElementById('ivc-auth');
+    if (auth) auth.hidden = true;
+    document.body.classList.remove('ivc-auth-open');
+  }
+
+  function showPublicSite() {
+    // Fermer uniquement les espaces privés superposés.
+    // Ne jamais appeler auth.signOut() ici : la session doit rester active.
+    ['ivc-cd', 'ivx', 'ivc-ent'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('on');
+    });
+    document.querySelectorAll('.ivc-view.is-open').forEach(function (el) {
+      el.classList.remove('is-open');
+    });
+    document.body.classList.remove(
+      'cd-lock', 'ivx-lock', 'ivc-view-active', 'ivc-modal-open'
+    );
+    closeAuthIfOpen();
+
+    var menu = document.getElementById('menu');
+    if (menu) menu.classList.remove('is-open');
+    var burger = document.querySelector('.hamb[aria-controls="menu"]');
+    if (burger) {
+      burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Ouvrir le menu');
+    }
+
+    // Retour à la page d'accueil publique sans recharger ni perdre la session.
+    try {
+      history.replaceState(null, '', location.pathname + location.search);
+    } catch (err) {
+      location.hash = '';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  // Si la session Supabase existe déjà, toute demande d'ouverture du
+  // formulaire de connexion est ignorée : le client reste connecté.
+  function protectExistingSession() {
+    if (typeof window.ivcOpenAuth !== 'function' || window.ivcOpenAuth.__sessionGuard) return;
+    var originalOpenAuth = window.ivcOpenAuth;
+    var guardedOpenAuth = function (mode, role) {
+      var db = window.IVC && window.IVC.db;
+      if (!db || !db.auth || typeof db.auth.getSession !== 'function') {
+        return originalOpenAuth(mode, role);
+      }
+      return db.auth.getSession().then(function (result) {
+        var session = result && result.data && result.data.session;
+        if (session && session.user) {
+          closeAuthIfOpen();
+          if (window.ivcSetAccountState) window.ivcSetAccountState(session.user);
+          return;
+        }
+        return originalOpenAuth(mode, role);
+      }).catch(function () {
+        return originalOpenAuth(mode, role);
+      });
+    };
+    guardedOpenAuth.__sessionGuard = true;
+    window.ivcOpenAuth = guardedOpenAuth;
+  }
+
+  function refreshAccountState() {
+    var db = window.IVC && window.IVC.db;
+    if (!db || !db.auth) return;
+    db.auth.getSession().then(function (result) {
+      var session = result && result.data && result.data.session;
+      if (window.ivcSetAccountState) {
+        window.ivcSetAccountState(session && session.user ? session.user : null);
+      }
+      var login = document.querySelector('.header-actions .login-btn');
+      if (login) login.hidden = !!(session && session.user);
+    }).catch(function (err) {
+      console.error('Vérification de la session IVC :', err);
+    });
+  }
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest &&
+      event.target.closest('[data-public], [data-en="public"]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    showPublicSite();
+  }, true);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      protectExistingSession();
+      refreshAccountState();
+    }, { once: true });
+  } else {
+    protectExistingSession();
+    refreshAccountState();
+  }
+  window.addEventListener('load', function () {
+    protectExistingSession();
+    refreshAccountState();
+  }, { once: true });
+})();
+</script>
+
 </body></html>
 <style>
 /* Reliable modal overlay for mobile Safari and embedded HTML previews */
