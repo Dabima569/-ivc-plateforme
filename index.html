@@ -2621,23 +2621,32 @@ room.connect(d.serverUrl,d.participantToken).then(function(){return room.localPa
 </script>
 
 <script id="ivc-session-restore">
+/*
+ * Une session Supabase existante ne doit pas faire quitter automatiquement
+ * le site public. Elle reste active et le bouton « Mon espace » permet
+ * d'ouvrir volontairement le tableau de bord correspondant au profil.
+ * La redirection après une connexion volontaire reste gérée par le flux
+ * d'authentification existant.
+ */
 (function(){
   async function restore(){
     var client=window.IVC&&window.IVC.db;
     if(!client)return;
     try{
-      var sr=await client.auth.getSession(),session=sr.data&&sr.data.session;
-      if(!session||!window.ivxEnter)return;
-      var r=await client.from('profiles').select('full_name,role,is_verified,is_suspended').eq('id',session.user.id).maybeSingle();
-      if(r.error||!r.data||r.data.is_suspended)return;
-      var p=r.data,space=null;
-      if(['proprietaire','client','acheteur'].includes(p.role))space='parent';
-      else if(p.role==='eleveur')space='eleveur';
-      else if(p.role==='veterinaire'&&p.is_verified===true)space='entreprise';
-      if(space)window.ivxEnter(space,p.full_name||'Utilisateur IVC',space!=='entreprise');
-    }catch(e){console.error('Restauration session IVC:',e);}
+      var sr=await client.auth.getSession();
+      var session=sr.data&&sr.data.session;
+      if(window.ivcSetAccountState){
+        window.ivcSetAccountState(session&&session.user?session.user:null);
+      }
+    }catch(e){
+      console.error('Restauration de la session IVC:',e);
+    }
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});else restore();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',restore,{once:true});
+  }else{
+    restore();
+  }
 })();
 </script>
 <script id="ivc-live-data-integration">
