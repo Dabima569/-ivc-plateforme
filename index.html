@@ -1939,8 +1939,29 @@ document.addEventListener('DOMContentLoaded', function () {
       $('au-pass').setAttribute('autocomplete',mode==='signup'?'new-password':'current-password');
     }
     function clearErrors(){form.querySelectorAll('.ivf-field').forEach(function(f){setErr(f,'')})}
-    window.ivcOpenAuth=function(m,r){
-      closeMenu();mode=m||'signup';if(r)role=r;
+    window.ivcOpenAuth=async function(m,r){
+      closeMenu();
+
+      /* Un utilisateur déjà authentifié ne doit jamais repasser par l'inscription
+         ou la connexion lorsqu'il ouvre un autre espace ou un service IVC. */
+      var authClient=window.IVC&&window.IVC.db;
+      if(authClient){
+        try{
+          var current=await authClient.auth.getSession();
+          if(current.data&&current.data.session){
+            if(window.ivcOpenMySpace){
+              await window.ivcOpenMySpace();
+              return;
+            }
+          }
+        }catch(authCheckError){
+          console.warn('Vérification de session IVC :',authCheckError);
+          /* En cas d'erreur de vérification, ne pas créer de session ni contourner
+             les contrôles : afficher le formulaire de connexion normalement. */
+        }
+      }
+
+      mode=m||'signup';if(r)role=r;
       form.reset();clearErrors();$('au-pass').type='password';$('au-toggle').textContent='Afficher';
       form.hidden=false;done.hidden=true;apply();
       last=document.activeElement;box.hidden=false;box.scrollTop=0;document.body.classList.add('ivc-auth-open');
