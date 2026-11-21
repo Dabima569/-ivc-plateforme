@@ -1166,7 +1166,7 @@ footer strong,footer h2,footer h3,footer h4{color:#DDF3E7!important}
 </div>
 <a aria-controls="menu" aria-expanded="false" aria-label="Ouvrir le menu" class="hamb" href="#menu" role="button"><span></span><span></span><span></span></a>
 </header>
-<nav class="menu-drawer" id="menu" aria-label="Menu principal"><div class="ivc-mobile-menu-top"><a href="#" class="ivc-menu-home ivc-menu-home-top" data-ivc-home>Retour à l’accueil</a><span class="ivc-mobile-menu-label">Menu IVC</span></div><div class="ivc-menu-tabs" role="group" aria-label="Choisir votre espace"><button type="button" class="ivc-tab" aria-pressed="true">Parents d’animaux</button><button type="button" class="ivc-tab" aria-pressed="false">Éleveurs</button><button type="button" class="ivc-tab" aria-pressed="false">Entreprises vétérinaires</button></div><div class="ivc-menu-list"><details class="ivc-menu-group"><summary>Nos services</summary><div class="ivc-menu-sub"><a href="#ivc-boutique">Boutique IVC</a><a href="#ivc-lims">Portail LIMS</a><a href="#ivc-audit">Demande d’audit</a></div></details><a href="#ivc-apropos">À propos</a><a href="mailto:contact@ivc.ci" data-ivc-support>Support</a></div><div class="ivc-menu-actions"><button type="button" id="ivc-menu-account" class="ivc-menu-login" onclick="ivcHandleMenuAccount()">Connexion</button><a class="ivc-menu-rdv request-modal-trigger" data-ivc-rdv href="#ivc-rdv"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><rect x="2" y="6" width="13" height="12" rx="2.5"/><path d="M16.5 10.2l5-3v9.6l-5-3z"/></svg><span>Prendre un rendez-vous</span></a></div></nav>
+<nav class="menu-drawer" id="menu" aria-label="Menu principal"><div class="ivc-mobile-menu-top"><a href="#" class="ivc-menu-home ivc-menu-home-top" data-ivc-home>Retour à l’accueil</a><span class="ivc-mobile-menu-label">Menu IVC</span></div><div class="ivc-menu-tabs" role="group" aria-label="Choisir votre espace"><button type="button" class="ivc-tab" aria-pressed="true">Parents d’animaux</button><button type="button" class="ivc-tab" aria-pressed="false">Éleveurs</button><button type="button" class="ivc-tab" aria-pressed="false">Entreprises vétérinaires</button></div><div class="ivc-menu-list"><details class="ivc-menu-group"><summary>Nos services</summary><div class="ivc-menu-sub"><a href="#ivc-boutique">Boutique IVC</a><a href="#ivc-lims">Portail LIMS</a><a href="#ivc-audit">Demande d’audit</a></div></details><a href="#ivc-apropos">À propos</a><a href="mailto:contact@ivc.ci" data-ivc-support>Support</a></div><button type="button" id="ivc-menu-logout" onclick="ivcLogout()" style="display:none;margin:12px auto;padding:12px 24px;background:none;border:0;font:inherit;font-weight:700;color:#c0392b;text-decoration:underline;cursor:pointer">Se déconnecter</button><div class="ivc-menu-actions"><button type="button" id="ivc-menu-account" class="ivc-menu-login" onclick="ivcHandleMenuAccount()">Connexion</button><a class="ivc-menu-rdv request-modal-trigger" data-ivc-rdv href="#ivc-rdv"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><rect x="2" y="6" width="13" height="12" rx="2.5"/><path d="M16.5 10.2l5-3v9.6l-5-3z"/></svg><span>Prendre un rendez-vous</span></a></div></nav>
 <section class="hero ivc-home-hero">
 <div class="hero-copy">
 <p class="ivc-hero-kicker">IVOIRE VET CONSULTING</p>
@@ -1967,7 +1967,7 @@ document.addEventListener('DOMContentLoaded', function () {
       submit.textContent=mode==='signup'?'Création du compte…':'Connexion…';
       try{
         if(mode==='signup'){
-          var requestedRole=role==='parent'?'proprietaire':(role==='eleveur'?'eleveur':'veterinaire');
+          var requestedRole=role==='parent'?'proprietaire':(role==='eleveur'?'eleveur':'entreprise');
           var metadata={full_name:(first+' '+last).trim(),name:(first+' '+last).trim(),requested_role:requestedRole,country:$('au-country').value};
           if(role==='vet'){metadata.license_number=$('au-license').value.trim();metadata.organization_name=$('au-org').value.trim()||null;}
           if(role==='eleveur'){metadata.organization_name=$('au-farm').value.trim()||null;metadata.herd_type=$('au-herd').value||null;}
@@ -2013,10 +2013,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var p=r.data;if(!p)return {ok:false,message:'Votre profil IVC n’a pas encore été créé. Contactez le support.'};
       if(p.is_suspended)return {ok:false,message:'Ce compte est suspendu. Contactez le support IVC.'};
       var space=null;
-      if(p.requested_role==='veterinaire'&&p.role!=='veterinaire')return {ok:false,message:'Votre demande de compte vétérinaire est enregistrée. L’accès professionnel sera ouvert après validation par IVC.'};
+      if(p.requested_role==='entreprise'&&p.role!=='entreprise')return {ok:false,message:'Votre demande de compte entreprise vétérinaire est enregistrée. L’accès professionnel sera ouvert après validation par IVC.'};
       if(['proprietaire','client','acheteur'].includes(p.role))space='parent';
       else if(p.role==='eleveur')space='eleveur';
-      else if(p.role==='veterinaire'&&p.is_verified===true)space='entreprise';
+      else if(p.role==='entreprise'&&p.is_verified===true)space='entreprise';
+      else if(p.role==='veterinaire')return {ok:false,message:'Ce compte est un compte vétérinaire IVC : utilisez l’espace vétérinaire dédié.'};
       else if(p.role==='admin')return {ok:false,message:'Ce compte ne relève pas de l’espace public IVC.'};
       if(!space)return {ok:false,message:'Le rôle associé à votre compte ne permet pas l’accès à cet espace public.'};
       return {ok:true,space:space,name:p.full_name||'Utilisateur IVC'};
@@ -2533,15 +2534,26 @@ window.ivcOpenMySpace=async function(){
       alert('L’espace administration est séparé du site public. Utilisez son adresse d’accès dédiée.');return;
     }
     if(role==='veterinaire'){
+      if(confirm('Ce compte est un compte vétérinaire IVC : il utilise l’espace vétérinaire dédié, pas l’espace entreprise cliente de ce site.\n\nVoulez-vous vous déconnecter pour utiliser un autre compte ?')&&window.ivcLogout)window.ivcLogout();
+      return;
+    }
+    if(role==='entreprise'){
       if(p.is_verified!==true||!p.organization_name){alert('Votre espace entreprise sera accessible après validation de votre profil et de votre organisation par IVC.');return;}
       space='entreprise';
     }else if(role==='eleveur')space='eleveur';else space='parent';
     if(window.ivxEnter)window.ivxEnter(space,p.full_name||session.user.email||'Utilisateur IVC',true);
   }catch(e){console.error('Ouverture espace IVC:',e);alert('Impossible de charger votre profil. Réessayez.');}
 };
+window.ivcLogout=async function(){
+  try{var D=window.IVC&&window.IVC.db;if(D)await D.auth.signOut();}catch(e){console.error('Déconnexion IVC:',e);}
+  try{localStorage.removeItem('ivc-demo');}catch(e){}
+  if(window.ivcSetAccountState)window.ivcSetAccountState(null);
+  location.href=location.pathname;
+};
 window.ivcSetAccountState=function(user){
   var b=document.getElementById('ivc-menu-account'),connected=!!user;
   if(b){b.textContent=connected?'Mon espace':'Connexion';b.setAttribute('aria-label',connected?'Ouvrir mon espace personnel':'Se connecter à IVC');b.classList.toggle('is-connected',connected);b.dataset.connected=String(connected);}
+  var lo=document.getElementById('ivc-menu-logout');if(lo)lo.style.display=connected?'block':'none';
   var actions=document.querySelector('.header-actions');
   if(actions){var spaceBtn=document.getElementById('ivc-header-my-space');
     if(connected&&!spaceBtn){spaceBtn=document.createElement('button');spaceBtn.type='button';spaceBtn.id='ivc-header-my-space';spaceBtn.className='pill ivc-my-space';spaceBtn.textContent='Mon espace';spaceBtn.addEventListener('click',window.ivcOpenMySpace);var login=actions.querySelector('.login-btn');actions.insertBefore(spaceBtn,login||actions.firstChild);}
@@ -2556,7 +2568,7 @@ window.ivcHandleMenuAccount=function(){
     if(!session){if(window.ivcOpenAuth)window.ivcOpenAuth('login');return;}
     var q=await D.from('profiles').select('full_name,role,is_verified').eq('id',session.user.id).maybeSingle();
     var p=q.data||{};
-    var space=(p.role==='eleveur')?'eleveur':(p.role==='veterinaire'&&p.is_verified===true?'entreprise':'parent');
+    var space=(p.role==='eleveur')?'eleveur':(p.role==='entreprise'&&p.is_verified===true?'entreprise':'parent');
     if(window.ivcOpenMySpace)window.ivcOpenMySpace();else if(window.ivcShowPostLoginChoice)window.ivcShowPostLoginChoice({space:space,name:p.full_name||'Utilisateur IVC'});
   });
 };
@@ -3197,7 +3209,7 @@ window.ivxEnter=function(r,n,sb){var self=this,a=arguments;
   if(r!=='entreprise'||!db())return prev&&prev.apply(self,a);
   db().auth.getUser().then(function(u){var us=u.data&&u.data.user;if(!us)return prev&&prev.apply(self,a);
     return db().from('profiles').select('full_name,role,is_verified,organization_name,avatar_url,country').eq('id',us.id).maybeSingle().then(function(q){var p=q.data;
-      if(p&&p.role==='veterinaire'&&p.is_verified===true&&p.organization_name&&String(p.organization_name).trim())show(us.id,us.email||'',p);else if(prev)prev.apply(self,a)})
+      if(p&&p.role==='entreprise'&&p.is_verified===true&&p.organization_name&&String(p.organization_name).trim())show(us.id,us.email||'',p);else if(prev)prev.apply(self,a)})
   }).catch(function(){if(prev)prev.apply(self,a)})};
 })();
 </script>
