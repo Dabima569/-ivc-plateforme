@@ -3542,7 +3542,7 @@ window.ivxEnter=function(r,n,sb){var self=this,a=arguments;
       pg.setAttribute('position',new THREE.BufferAttribute(pa,3));
       var pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xb9f3c4,size:.07,transparent:true,opacity:.6}));sc.add(pts);
       g.rotation.z=.35;
-      var size=function(){var w=hero.clientWidth,h=hero.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();g.position.x=w>800?6.9:(w>560?5:3.8);g.scale.setScalar(w>800?.5:.4)};
+      var size=function(){var w=hero.clientWidth,h=hero.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();g.position.x=w>800?6.9:(w>560?5:2.6);g.position.y=0;g.scale.setScalar(w>800?.5:(w>560?.4:.32))};
       size();addEventListener('resize',size);addEventListener('load',size);setTimeout(size,400);
       var vis=true;if(window.IntersectionObserver)new IntersectionObserver(function(e){vis=e[0].isIntersecting}).observe(hero);
       var sy=0,mx=0,my=0;addEventListener('scroll',function(){sy=scrollY},{passive:true});
@@ -5049,6 +5049,13 @@ body .ivc-home-hero .ivc-hero-tx{position:relative!important;z-index:2!important
 })();
 </script>
 
+
+<style id="ivc-mobile-dna-visibility-final">
+/* Sur mobile : hélice complète mieux cadrée et plus lisible. Le rendu tablette/ordinateur reste inchangé. */
+@media (max-width:700px){
+  .ivc-home-hero canvas.ivc-3d{opacity:.92!important;filter:drop-shadow(0 0 8px rgba(190,255,210,.38));}
+}
+</style>
 </body></html>
 <style>
 /* Reliable modal overlay for mobile Safari and embedded HTML previews */
