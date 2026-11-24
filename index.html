@@ -1934,10 +1934,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---- Boutique : le panier fonctionne en CSS ; le JS ajoute seulement le confort ---- */
   window.ivcFilterProducts=function(){
-    var q=document.getElementById('productSearch').value.toLowerCase(),c=document.getElementById('productCat').value;
+    var view=document.getElementById('ivc-boutique');
+    var search=document.getElementById('productSearch');
+    var category=document.getElementById('productCat');
+    if(!search||!category)return;
+    /* Garder la position de lecture dans la boutique pendant le filtrage. */
+    var previousTop=view?view.scrollTop:0;
+    var q=search.value.toLowerCase().trim(),c=category.value;
     document.querySelectorAll('#ivc-boutique .product').forEach(function(p){
       p.style.display=(p.textContent.toLowerCase().indexOf(q)>-1&&(!c||p.dataset.cat===c))?'':'none';
     });
+    if(view){
+      requestAnimationFrame(function(){
+        var maxTop=Math.max(0,view.scrollHeight-view.clientHeight);
+        view.scrollTop=Math.min(previousTop,maxTop);
+      });
+    }
   };
   document.addEventListener('keydown',function(e){
     if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('label[role="button"][tabindex]')){e.preventDefault();e.target.click();}
@@ -4540,6 +4552,17 @@ body footer#contact .copy span{color:rgba(255,255,255,.64)!important}
 #ivc-views .ivc-fcart-count{background:#fff;color:var(--ivx-forest)}
 #ivc-views .ivc-cartpanel{border-radius:26px;border:0;box-shadow:0 40px 80px -20px rgba(3,38,21,.55)}
 #ivc-views .ivc-cp-order{background:var(--ivx-green)}
+/* Correctif mobile boutique : la barre de recherche ne doit pas recouvrir les produits. */
+@media(max-width:700px){
+  #ivc-views .toolbar{
+    position:relative!important;
+    top:auto!important;
+    z-index:1!important;
+    scroll-margin-top:12px;
+  }
+  #ivc-views .toolbar input{scroll-margin-top:96px;}
+  #ivc-views .products{overflow-anchor:none;}
+}
 @media(max-width:560px){
   #ivc-views .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   #ivc-views .product{border-radius:22px}
