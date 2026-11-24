@@ -69,6 +69,125 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 16p
 #ivc-auth-gate .autherr{color:#b42318;min-height:18px;font-size:12px}#ivc-auth-gate .authbrand{font-weight:900;color:#08743f;letter-spacing:1px;margin-bottom:18px}
 .ivc-live-note{background:#effaf3;border:1px solid #cfe9d8;border-radius:9px;padding:10px 12px;color:#245c3c;font-size:12px;margin:10px 0}
 </style><style id="ivc-mobile-fix">html,body{overflow-x:hidden}.main,.card,.stats>div{min-width:0}svg,canvas,img{max-width:100%}@media(max-width:560px){.g2,.g3,.g2b{grid-template-columns:1fr!important}.hd{flex-wrap:wrap;gap:10px}.hd>.pb,.hd>.sb{width:100%}.li{flex-wrap:wrap;gap:6px}.ms{grid-template-columns:40px 1fr}.sx table{min-width:520px}th,td{padding:8px 10px;font-size:14px}.modal,[role=dialog]{max-width:calc(100vw - 20px)}}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style id="ivc-pro-theme">
+/* ===== IVC Pro : système visuel (tableaux de bord admin et vétérinaire) ===== */
+:root{--bg:#edf3f0;--card:#fff;--ink:#0f2419;--mut:#5b6f64;--line:#dfe8e3;--g:#0fa968;--gd:#087a4a;--mint:#e4f6ed;
+ --sh:0 1px 2px rgba(9,43,31,.05),0 12px 30px -16px rgba(9,43,31,.22);--sh2:0 2px 4px rgba(9,43,31,.06),0 22px 44px -18px rgba(9,43,31,.34);--r:18px}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--sh:0 1px 0 rgba(255,255,255,.04) inset,0 14px 34px -16px rgba(0,0,0,.7);--sh2:0 22px 48px -18px rgba(0,0,0,.85)}}
+:root[data-theme="dark"]{--bg:#0b1511;--card:#13221b;--ink:#e8f2ec;--mut:#9db1a5;--line:#243a2f;--mint:#1a3a2d;--peach:#3b2418;--sh:0 1px 0 rgba(255,255,255,.04) inset,0 14px 34px -16px rgba(0,0,0,.7);--sh2:0 22px 48px -18px rgba(0,0,0,.85)}
+html{scroll-behavior:smooth}
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,-apple-system,Arial,sans-serif;-webkit-font-smoothing:antialiased;
+ background:radial-gradient(900px 520px at 88% -8%,rgba(16,185,129,.13),transparent 62%),radial-gradient(760px 460px at -6% 42%,rgba(22,130,223,.08),transparent 60%),var(--bg);background-attachment:fixed}
+::selection{background:#0fa96833}
+*{scrollbar-width:thin;scrollbar-color:#0fa96866 transparent}
+:focus-visible{outline:3px solid #34d399;outline-offset:2px;border-radius:8px}
+/* --- Barre latérale --- */
+.side{background:linear-gradient(185deg,#06382a 0%,#0a4a37 52%,#0c6147 100%)!important;color:#e5f5ec;border:0!important;box-shadow:0 20px 50px -20px rgba(4,40,28,.7)!important}
+.side::before{content:"";position:absolute;width:260px;height:260px;right:-120px;top:-90px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,.35),transparent 68%);pointer-events:none;animation:ivpFloat 9s ease-in-out infinite alternate}
+.side>*{position:relative}
+@keyframes ivpFloat{to{transform:translate(-30px,40px) scale(1.15)}}
+.side .brand{color:#fff;font-weight:800;letter-spacing:-.01em}.side .brand small{color:#9fd8bf}
+.side .brand>span:first-child{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#34d399,#0fa968);box-shadow:0 10px 22px -8px rgba(52,211,153,.9);font-size:22px!important}
+.side .sec{color:rgba(255,255,255,.48);font-weight:700}
+.side .nav button{color:#d3eadf;border:1px solid transparent;transition:background .2s,transform .2s,color .2s;font-weight:600}
+.side .nav button:hover{background:rgba(255,255,255,.09);color:#fff;transform:translateX(3px)}
+.side .nav button.on{background:linear-gradient(90deg,rgba(52,211,153,.34),rgba(52,211,153,.08));color:#fff;border-color:rgba(110,231,183,.28);box-shadow:inset 3px 0 0 #34d399,0 8px 20px -12px rgba(0,0,0,.6)}
+.side .nav i{background:rgba(255,255,255,.14);color:#fff}
+.side .nav .sub{font-weight:500}
+.side .sb,.side .sup{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#cfe9dc;backdrop-filter:blur(6px);border-radius:14px}
+.side .sb b,.side .sup b{color:#fff}
+.side .ivc-admin-identity{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14)}
+.side .ivc-admin-avatar{background:rgba(255,255,255,.16)}
+.side .ivc-admin-identity-text strong{color:#fff}.side .ivc-admin-identity-text span{color:#b7dccb}.side .ivc-admin-identity-text small{color:#6ee7b7}
+/* --- Barre supérieure --- */
+.top{background:rgba(255,255,255,.78)!important;-webkit-backdrop-filter:saturate(1.5) blur(16px);backdrop-filter:saturate(1.5) blur(16px);border-color:var(--line)!important;box-shadow:0 8px 24px -18px rgba(9,43,31,.4)}
+:root[data-theme="dark"] .top{background:rgba(19,34,27,.78)!important}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .top{background:rgba(19,34,27,.78)!important}}
+.ivp-vet .main>.top{position:sticky;top:12px;z-index:25}
+.search{transition:box-shadow .2s,border-color .2s;border:1px solid var(--line)!important;background:var(--bg)}
+.search:focus{outline:0;border-color:#0fa968!important;box-shadow:0 0 0 4px rgba(15,169,104,.18)}
+.ibtn,.ib,.ivp-theme{transition:transform .15s,background .2s,box-shadow .2s}
+.ibtn:hover,.ib:hover,.ivp-theme:hover{transform:translateY(-2px)}
+.ib{box-shadow:var(--sh)}
+.ivp-theme{border:1px solid var(--line);background:var(--card);border-radius:12px;width:44px;height:44px;font-size:19px;flex:none;box-shadow:var(--sh)}
+.me{transition:transform .15s,box-shadow .2s}.me:hover{transform:translateY(-1px)}
+.av{border:2px solid #0fa968!important;box-shadow:0 0 0 4px rgba(15,169,104,.15)}
+/* --- En-têtes de page, panneaux, cartes --- */
+.hd h1{font-weight:800;letter-spacing:-.025em}.hd p{color:var(--mut)}
+.pn,.card,.st{position:relative;border:1px solid var(--line)!important;border-radius:var(--r)!important;background:var(--card);box-shadow:var(--sh);transition:box-shadow .3s,transform .3s,border-color .3s}
+.pn:hover,.card:hover,.st:hover{box-shadow:var(--sh2);border-color:rgba(15,169,104,.35)!important}
+.pn::before,.card::before,.st::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%),rgba(52,211,153,.16),transparent 62%)}
+.pn:hover::before,.card:hover::before,.st:hover::before{opacity:1}
+.ph h2{font-weight:800;font-size:17px;letter-spacing:-.01em}
+.st,.st:nth-child(n){background:var(--card);padding:20px;--a1:#0fa968;--a2:#34d399}
+.st:nth-child(2){--a1:#1682df;--a2:#60b3f5}.st:nth-child(3){--a1:#f59a22;--a2:#fcc766}.st:nth-child(4){--a1:#6665d8;--a2:#a5a4f2}
+.st::after{content:"";position:absolute;left:20px;right:20px;top:0;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--a1),var(--a2))}
+.st .ic{background:linear-gradient(135deg,var(--a1),var(--a2))!important;box-shadow:0 12px 22px -10px var(--a1);border-radius:14px!important}
+.st strong{font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.st small{color:var(--mut);font-weight:600}
+.stats>div strong{font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--gd),#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats>div:not(.st){transition:transform .25s}.stats>div:not(.st):hover{transform:translateY(-2px)}
+.ki div,.lgb,.rg,.qk,.qa button,.ag{transition:transform .2s,box-shadow .2s,border-color .2s,background .2s}
+.ki div:hover,.lgb:hover,.rg:hover,.qk:hover,.qa button:hover,.ag:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.rq,.ms{transition:background .2s}.rq:hover,.ms:hover{background:linear-gradient(90deg,var(--mint),transparent)}
+.th{background:linear-gradient(135deg,var(--mint),transparent);border:1px solid var(--line)}
+.dn{box-shadow:0 18px 36px -18px rgba(15,169,104,.55)}
+.goal{background:linear-gradient(135deg,#0fa968,#06503a)!important;box-shadow:0 18px 36px -16px rgba(6,80,58,.8)}
+.goal .bar i{box-shadow:0 0 14px rgba(255,255,255,.7)}
+/* --- Boutons, étiquettes, tableaux --- */
+.b1,.pb{background:linear-gradient(135deg,#14bd7c,#0a8f5c)!important;color:#fff!important;border:0!important;box-shadow:0 10px 20px -10px rgba(10,143,92,.9);transition:transform .15s,box-shadow .2s,filter .2s;font-weight:700}
+.b1:hover,.pb:hover{transform:translateY(-2px);box-shadow:0 16px 26px -12px rgba(10,143,92,.95);filter:saturate(1.1)}
+.b1:active,.pb:active,.b2:active,.sb:active{transform:scale(.97)}
+.b2,.sb,.lk{transition:transform .15s,background .2s,border-color .2s}.b2:hover,.sb:hover,.lk:hover{transform:translateY(-1px);border-color:var(--g)}
+.tg,.tgb,.bdg{border-radius:99px}
+.tg::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:middle}
+.cnt{box-shadow:0 6px 14px -6px #e11d48}
+table{border-collapse:separate;border-spacing:0}
+th{text-transform:uppercase;letter-spacing:.07em;font-size:11.5px;font-weight:700;background:var(--bg)}
+tbody tr{transition:background .2s}tbody tr:hover td{background:var(--mint)}
+td,th{padding:14px 18px}
+.per{border-radius:12px;box-shadow:var(--sh)}.per .s{background:linear-gradient(135deg,#14bd7c,#0a8f5c);box-shadow:0 8px 16px -8px rgba(10,143,92,.9)}
+.sbar input,.fd input,.fd select,.fd textarea{transition:border-color .2s,box-shadow .2s}
+.sbar input:focus,.fd input:focus,.fd select:focus,.fd textarea:focus{outline:0;border-color:#0fa968;box-shadow:0 0 0 4px rgba(15,169,104,.16)}
+/* --- Fenêtres modales, notifications --- */
+.mb{-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);background:rgba(4,30,21,.55)}
+.mb.show .md{animation:ivpPop .32s cubic-bezier(.2,.9,.3,1.15)}
+.md{border-radius:22px;box-shadow:0 40px 90px -20px rgba(0,0,0,.6)}
+@keyframes ivpPop{from{opacity:0;transform:translateY(18px) scale(.96)}}
+.pop{border-radius:16px;box-shadow:0 24px 60px -16px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pop.show{animation:ivpPop .22s ease-out}
+.toast{background:rgba(6,56,42,.94)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(110,231,183,.3);border-radius:99px!important;box-shadow:0 18px 40px -12px rgba(0,0,0,.6);font-weight:600}
+.ft{color:var(--mut)}
+/* --- Bandeau immersif (Three.js) --- */
+.ivp-hero{position:relative;isolation:isolate;overflow:hidden;border-radius:26px;margin:0 0 20px;padding:30px 32px;min-height:200px;color:#fff;background:radial-gradient(120% 150% at 0% 0%,#0e7352 0%,#07402f 55%,#04271d 100%);box-shadow:0 30px 60px -28px rgba(4,39,29,.9)}
+.ivp-cv{position:absolute;inset:0;width:100%;height:100%;z-index:-2;display:block}
+.ivp-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(4,39,29,.86) 0%,rgba(4,39,29,.4) 52%,transparent 100%)}
+.ivp-hero .k{display:block;letter-spacing:.16em;text-transform:uppercase;font-weight:700;font-size:12px;color:#7ee2b8}
+.ivp-hero h2{margin:8px 0 8px;font-size:clamp(25px,3.4vw,38px);line-height:1.1;font-weight:800;letter-spacing:-.025em;color:#fff}
+.ivp-hero p{margin:0;max-width:540px;color:rgba(255,255,255,.84);font-size:15.5px}
+.ivp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.ivp-chips span{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:99px;padding:7px 15px;font-size:13px;font-weight:700}
+.ivp-dot{width:8px;height:8px;border-radius:50%;background:#34d399;animation:ivpPulse 2s infinite}
+.ivp-dot.off{background:#9aa9a1;animation:none}
+@keyframes ivpPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}70%{box-shadow:0 0 0 10px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+.ivp-clock{position:absolute;right:28px;top:24px;text-align:right}
+.ivp-clock b{display:block;font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;text-shadow:0 4px 24px rgba(0,0,0,.4)}
+.ivp-clock span{font-size:13px;opacity:.85;text-transform:capitalize}
+@media(max-width:700px){.ivp-hero{padding:24px 18px;min-height:0;border-radius:22px}.ivp-clock{position:static;display:flex;gap:10px;align-items:baseline;margin-bottom:6px}.ivp-clock b{font-size:22px}.ivp-hero::after{background:rgba(4,39,29,.5)}}
+/* --- Écran de connexion immersif --- */
+#ivc-auth-gate{background:radial-gradient(110% 130% at 15% 0%,#0e7352 0%,#06402f 55%,#031d15 100%)!important;overflow:hidden}
+.ivp-gcv{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+#ivc-auth-gate .authbox{position:relative;z-index:1;background:rgba(255,255,255,.95)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.6);border-radius:26px!important;box-shadow:0 40px 100px -20px rgba(0,0,0,.65)!important;animation:ivpPop .6s cubic-bezier(.2,.9,.3,1.1)}
+#ivc-auth-gate .authbrand{display:inline-flex;align-items:center;gap:10px}
+#ivc-auth-gate .authbrand::before{content:"🐾";display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#34d399,#0fa968);box-shadow:0 10px 20px -8px rgba(15,169,104,.9)}
+#ivc-auth-gate input{border-radius:12px!important;transition:border-color .2s,box-shadow .2s}
+#ivc-auth-gate input:focus{outline:0;border-color:#0fa968!important;box-shadow:0 0 0 4px rgba(15,169,104,.18)}
+#ivc-auth-gate button{background:linear-gradient(135deg,#14bd7c,#0a8f5c)!important;border-radius:12px!important;box-shadow:0 14px 26px -12px rgba(10,143,92,.95);transition:transform .15s,box-shadow .2s}
+#ivc-auth-gate button:hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
 </head><body>
 <aside class="side" id="side">
 <div class="brand"><span style="font-size:30px">🐾</span><div>IVC<small>Espace vétérinaire</small></div></div>
@@ -387,6 +506,248 @@ print:function(h){var o=document.getElementById('ivci-print');if(o)o.remove();o=
 };
 var s=document.createElement('style');s.textContent='.ivci-f{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c9d5cf;border-radius:10px;font:inherit;background:#fff;color:#111}.ivci-row{display:grid;gap:6px;margin:8px 0;padding:10px;border:1px solid #e2e8e4;border-radius:12px;text-align:left}.ivci-g{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ivci-add{border:1px dashed #159653;background:#f1faf5;color:#0b6b3a;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit}#ivci-form{max-height:62vh;overflow:auto;text-align:left;padding-right:4px}#ivci-form h4{margin:14px 0 4px}#ivci-print{display:none}@media print{body>*:not(#ivci-print){display:none!important}#ivci-print{display:block!important}}@media(max-width:560px){.ivci-g{grid-template-columns:1fr}}';document.head.appendChild(s);
 window.IVCI=I;
+})();
+</script>
+<!-- IVC GPS BIDIRECTIONNEL — module additionnel, nécessite la migration SQL ivc_gps_setup.sql -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<style>
+#ivc-gps-launch{position:fixed;right:18px;bottom:18px;z-index:99990;border:0;border-radius:999px;padding:13px 17px;background:#08743f;color:#fff;font:700 14px/1.2 system-ui;box-shadow:0 8px 26px #002b1840;cursor:pointer}
+#ivc-gps-panel{position:fixed;right:16px;bottom:76px;z-index:99991;width:min(440px,calc(100vw - 24px));max-height:min(78vh,720px);overflow:auto;background:#fff;color:#183329;border:1px solid #dce9e1;border-radius:17px;box-shadow:0 18px 55px #002b1833;padding:16px;font:14px/1.45 system-ui;display:none}
+#ivc-gps-panel h3{margin:0 0 5px;font-size:18px}#ivc-gps-panel p{margin:5px 0 12px;color:#63756b;font-size:12px}
+#ivc-gps-panel select,#ivc-gps-panel button{font:inherit}#ivc-gps-panel select{width:100%;padding:10px;border:1px solid #d9e5de;border-radius:9px;margin:8px 0}
+#ivc-gps-panel .gps-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}#ivc-gps-panel .gps-actions button{border:0;border-radius:9px;padding:10px 12px;background:#08743f;color:#fff;font-weight:700;cursor:pointer}#ivc-gps-panel .gps-actions button.alt{background:#edf5f0;color:#24513b}#ivc-gps-panel .gps-status{font-size:12px;color:#24513b;background:#eff8f2;border-radius:8px;padding:8px;margin:8px 0}
+#ivc-gps-map{height:270px;border-radius:12px;overflow:hidden;background:#edf3ef;margin-top:10px}#ivc-gps-close{float:right;border:0;background:transparent;font-size:22px;cursor:pointer;color:#667}
+@media(max-width:560px){#ivc-gps-panel{right:8px;bottom:70px;width:calc(100vw - 16px)}#ivc-gps-map{height:230px}}
+</style>
+<button id="ivc-gps-launch" type="button">📍 Suivi GPS IVC</button>
+<section id="ivc-gps-panel" role="dialog" aria-label="Suivi GPS des interventions">
+ <button id="ivc-gps-close" type="button" aria-label="Fermer">×</button>
+ <h3>Suivi GPS des interventions</h3><p id="ivc-gps-intro">Localisation partagée uniquement pendant une intervention active.</p>
+ <label for="ivc-gps-request"><b>Intervention</b></label><select id="ivc-gps-request"><option value="">Chargement…</option></select>
+ <div class="gps-actions" id="ivc-gps-actions"></div>
+ <div class="gps-status" id="ivc-gps-status" aria-live="polite">Connexion sécurisée en cours…</div>
+ <div id="ivc-gps-map" aria-label="Carte des positions GPS"></div>
+</section>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(function(){
+ 'use strict';
+ var MODE='vet', URL='https://eykvnhbkhcelzwbowxqz.supabase.co', KEY='sb_publishable_nRk4BoZlexVmU7RXdoSdMg_Nlk1B8XU';
+ var $=function(id){return document.getElementById(id)}, client=null, session=null, profile=null, requests=[], selected=null, map=null, markers={}, channel=null, watch=null, lastWrite=0, refreshTimer=null;
+ var active=function(r){return r&&r.is_onsite&&['accepted','in_progress'].indexOf(r.status)>=0&&r.status!=='completed'};
+ var statusText=function(r){return r.field_status==='en_route'?'Vétérinaire en route':r.field_status==='arriving'?'Arrivée annoncée':'Intervention acceptée'};
+ function say(s){$('ivc-gps-status').textContent=s}
+ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+ function stopWatch(){if(watch!==null&&navigator.geolocation)navigator.geolocation.clearWatch(watch);watch=null}
+ function initMap(){if(map||!window.L)return;map=L.map('ivc-gps-map',{scrollWheelZoom:false}).setView([7.54,-5.55],6);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map)}
+ function putMarker(key,lat,lon,label){initMap();if(!map)return;var ll=[Number(lat),Number(lon)];if(!isFinite(ll[0])||!isFinite(ll[1]))return;if(markers[key])markers[key].setLatLng(ll).bindPopup(esc(label));else markers[key]=L.marker(ll).addTo(map).bindPopup(esc(label));map.setView(ll,Math.max(map.getZoom(),13))}
+ function clearMarkers(){Object.keys(markers).forEach(function(k){map&&map.removeLayer(markers[k])});markers={}}
+ async function getPositions(){if(!selected)return;var q=await client.from('ivc_onsite_locations').select('user_id,latitude,longitude,accuracy_m,recorded_at').eq('request_id',selected);if(q.error){say('Lecture GPS indisponible : '+q.error.message);return}clearMarkers();var found={vet:false,client:false},people={};if(MODE==='admin'&&q.data&&q.data.length){var ids=q.data.map(function(x){return x.user_id});var pr=await client.from('profiles').select('id,full_name,role').in('id',ids);(pr.data||[]).forEach(function(x){people[x.id]=x})}(q.data||[]).forEach(function(p){var mine=p.user_id===session.user.id,person=people[p.user_id]||{},role=MODE==='admin'?(person.role==='veterinaire'?'Vétérinaire':(person.role==='client'||person.role==='proprietaire'||person.role==='eleveur'?'Client':'Utilisateur')):(mine?(MODE==='vet'?'Vétérinaire':'Client'):(MODE==='vet'?'Client':'Vétérinaire'));if(role==='Vétérinaire')found.vet=true;if(role==='Client')found.client=true;putMarker(p.user_id,p.latitude,p.longitude,(person.full_name?person.full_name+' · ':'')+role+' · précision ±'+Math.round(p.accuracy_m||0)+' m');});if(!q.data||!q.data.length)say('Aucune position partagée pour le moment.');else say((found.vet?'Position du vétérinaire reçue. ':'')+(found.client?'Position du client reçue. ':'')+'Mise à jour en temps réel.');}
+ async function loadRequests(){var q=client.from('requests').select('id,subject,description,status,field_status,eta_at,owner_id,assigned_professional_id,is_onsite,created_at').eq('is_onsite',true).in('status',['accepted','in_progress']).order('created_at',{ascending:false});if(MODE==='client')q=q.eq('owner_id',session.user.id);if(MODE==='vet')q=q.eq('assigned_professional_id',session.user.id);var res=await q;if(res.error)throw res.error;requests=res.data||[];var sel=$('ivc-gps-request');sel.innerHTML=requests.length?requests.map(function(r){return '<option value="'+esc(r.id)+'">'+esc(r.subject||'Intervention')+' — '+esc(statusText(r))+'</option>'}).join(''):'<option value="">Aucune intervention active</option>';selected=sel.value||null;renderActions();if(selected){await getPositions();subscribe()}else{stopWatch();clearMarkers();say('Aucune intervention active à suivre.');}}
+ function renderActions(){var a=$('ivc-gps-actions');a.innerHTML='';if(MODE==='admin'){var b=document.createElement('button');b.textContent='Actualiser les positions';b.onclick=getPositions;a.appendChild(b);return}if(!selected)return;var start=document.createElement('button');start.textContent='Partager ma position';start.onclick=startShare;a.appendChild(start);var stop=document.createElement('button');stop.textContent='Arrêter le partage';stop.className='alt';stop.onclick=stopShare;a.appendChild(stop);var note=document.createElement('span');note.style.cssText='font-size:11px;color:#65766d;align-self:center';note.textContent='Le partage utilise le GPS de cet appareil.';a.appendChild(note)}
+ function subscribe(){if(channel){client.removeChannel(channel);channel=null}channel=client.channel('ivc-gps-'+selected).on('postgres_changes',{event:'*',schema:'public',table:'ivc_onsite_locations',filter:'request_id=eq.'+selected},getPositions).subscribe()}
+ function startShare(){if(!navigator.geolocation){say('La géolocalisation n’est pas disponible sur cet appareil.');return}if(!selected){say('Sélectionnez une intervention active.');return}say('Demande d’autorisation GPS…');stopWatch();watch=navigator.geolocation.watchPosition(async function(pos){var now=Date.now();if(now-lastWrite<8000)return;lastWrite=now;var payload={request_id:selected,user_id:session.user.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy_m:pos.coords.accuracy,heading:pos.coords.heading,speed_mps:pos.coords.speed,recorded_at:new Date().toISOString()};var r=await client.from('ivc_onsite_locations').upsert(payload,{onConflict:'request_id,user_id'});if(r.error){say('Enregistrement GPS refusé : '+r.error.message);stopWatch();return}putMarker(session.user.id,payload.latitude,payload.longitude,MODE==='vet'?'Vétérinaire (vous)':'Client (vous)');say('Votre position est partagée. Vous pouvez arrêter à tout moment.');},function(err){say('GPS : '+err.message+'. Vérifiez les autorisations et utilisez HTTPS.');stopWatch();},{enableHighAccuracy:true,maximumAge:5000,timeout:20000});}
+ async function stopShare(){stopWatch();if(selected){var r=await client.from('ivc_onsite_locations').delete().eq('request_id',selected).eq('user_id',session.user.id);if(r.error){say('Arrêt du partage : '+r.error.message);return}}say('Partage de votre position arrêté.');await getPositions()}
+ async function boot(){try{if(!window.supabase||!window.supabase.createClient)throw new Error('Bibliothèque Supabase non chargée.');client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});var s=await client.auth.getSession();session=s.data&&s.data.session;if(!session)throw new Error('Connectez-vous à votre espace IVC pour utiliser le suivi GPS.');var p=await client.from('profiles').select('id,role,is_verified,is_suspended').eq('id',session.user.id).single();if(p.error)throw p.error;profile=p.data;if(MODE==='admin'&&(profile.role!=='admin'||profile.is_suspended))throw new Error('Accès réservé à l’administration IVC.');if(MODE==='vet'&&(profile.role!=='veterinaire'||!profile.is_verified||profile.is_suspended))throw new Error('Accès réservé aux vétérinaires IVC agréés.');if(MODE==='client'&&['client','proprietaire','eleveur'].indexOf(profile.role)<0)throw new Error('Ce compte ne dispose pas de l’espace client.');$('ivc-gps-intro').textContent=MODE==='client'?'Vous choisissez quand partager votre position avec le vétérinaire affecté.':MODE==='vet'?'Partagez votre position et consultez celle du client qui a accepté le partage.':'Suivi des positions des interventions actives.';await loadRequests();refreshTimer=setInterval(loadRequests,20000);}catch(e){say(e.message||'Initialisation du GPS impossible.')}}
+ $('ivc-gps-launch').addEventListener('click',function(){$('ivc-gps-panel').style.display='block';initMap();setTimeout(function(){if(map)map.invalidateSize()},150);if(!client)boot()});$('ivc-gps-close').addEventListener('click',function(){$('ivc-gps-panel').style.display='none'});$('ivc-gps-request').addEventListener('change',function(){stopWatch();selected=this.value||null;renderActions();if(selected){getPositions();subscribe()}else clearMarkers()});
+ window.addEventListener('beforeunload',function(){stopWatch();if(channel&&client)client.removeChannel(channel);if(refreshTimer)clearInterval(refreshTimer)});
+})();
+</script>
+
+
+<style id="ivc-gps-dashboard-only">
+#ivc-gps-launch{display:none!important}
+#ivc-gps-panel{position:fixed!important;right:12px!important;bottom:12px!important;top:auto!important;z-index:100100!important;width:min(560px,calc(100vw - 24px))!important;max-height:calc(100dvh - 24px)!important}
+.ivc-gps-nav-entry{display:flex;align-items:center;gap:10px;width:100%;border:0;text-align:left;cursor:pointer}
+#ivc-gps-panel.ivc-gps-open{display:block!important}
+</style>
+
+<script id="ivc-gps-dashboard-navigation">
+(function(){
+  'use strict';
+  function openGps(){
+    var panel=document.getElementById('ivc-gps-panel');
+    if(!panel)return;
+    panel.classList.add('ivc-gps-open');
+    panel.style.display='block';
+    var close=document.getElementById('ivc-gps-close');
+    if(close)close.focus();
+    if(window.L&&window.__ivcGpsMap&&window.__ivcGpsMap.invalidateSize){setTimeout(function(){window.__ivcGpsMap.invalidateSize()},180)}
+    var launcher=document.getElementById('ivc-gps-launch');
+    if(launcher)launcher.click();
+  }
+  function addEntry(){
+    var nav=document.querySelector('nav#nav');
+    if(nav&&!nav.querySelector('[data-ivc-gps-entry]')){
+      var b=document.createElement('button');b.type='button';b.className='ivc-gps-nav-entry';b.setAttribute('data-ivc-gps-entry','1');
+      b.innerHTML='<span aria-hidden="true">📍</span><span>Suivi GPS des interventions</span>';
+      b.addEventListener('click',openGps);nav.appendChild(b);
+    }
+    var clientNav=document.querySelector('#x-body .x-side');
+    if(clientNav&&!clientNav.querySelector('[data-ivc-gps-entry]')){
+      var c=document.createElement('button');c.type='button';c.className='x-nav ivc-gps-nav-entry';c.setAttribute('data-ivc-gps-entry','1');
+      c.innerHTML='📍 Suivi GPS des interventions';c.addEventListener('click',openGps);clientNav.appendChild(c);
+    }
+  }
+  function closeGps(){var panel=document.getElementById('ivc-gps-panel');if(panel){panel.classList.remove('ivc-gps-open');panel.style.display='none'}}
+  document.addEventListener('DOMContentLoaded',function(){
+    addEntry();
+    var observer=new MutationObserver(addEntry);observer.observe(document.body,{childList:true,subtree:true});
+    var close=document.getElementById('ivc-gps-close');if(close)close.addEventListener('click',closeGps);
+  });
+  if(document.readyState!=='loading'){addEntry();var observer=new MutationObserver(addEntry);observer.observe(document.body,{childList:true,subtree:true});var close=document.getElementById('ivc-gps-close');if(close)close.addEventListener('click',closeGps)}
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script id="ivc-pro-fx">
+/* ===== IVC Pro : bandeau 3D, animations d'entrée, thème clair/sombre ===== */
+(function(){
+  var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var ADMIN=!!document.getElementById('ivc-admin-identity');
+  document.body.classList.add(ADMIN?'ivp-admin':'ivp-vet');
+  function $(s,c){return (c||document).querySelector(s)}
+  function $$(s,c){return [].slice.call((c||document).querySelectorAll(s))}
+  var mx=0,my=0;
+  addEventListener('pointermove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+
+  /* ---- Thème clair / sombre ---- */
+  function getTheme(){var t=document.documentElement.getAttribute('data-theme');return t||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}
+  try{var st=localStorage.getItem('ivc_theme');if(st)document.documentElement.setAttribute('data-theme',st)}catch(e){}
+  var tb=document.createElement('button');tb.type='button';tb.id='ivp-theme';tb.className='ivp-theme';
+  function tIcon(){var d=getTheme()==='dark';tb.textContent=d?'☀️':'🌙';tb.setAttribute('aria-label',d?'Passer au thème clair':'Passer au thème sombre');tb.title=tb.getAttribute('aria-label')}
+  tb.addEventListener('click',function(){var n=getTheme()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ivc_theme',n)}catch(e){}tIcon()});
+  var bell=$('#bell');if(bell&&bell.parentNode)bell.parentNode.insertBefore(tb,bell);tIcon();
+  addEventListener('keydown',function(e){if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||'')){var q=$('#q');if(q){e.preventDefault();q.focus()}}});
+
+  /* ---- Réseau 3D (particules reliées + polyèdres filaires) ---- */
+  var nets=[],looping=false;
+  function Net(o){
+    o=o||{};var self=this,N=o.n||70,i;
+    var cv=document.createElement('canvas');cv.className=o.cls||'ivp-cv';cv.setAttribute('aria-hidden','true');
+    var r=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});r.setPixelRatio(Math.min(devicePixelRatio||1,2));
+    var sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,.1,50);cam.position.z=6;
+    var P=new Float32Array(N*3),V=[];
+    for(i=0;i<N;i++){P[i*3]=(Math.random()-.5)*11;P[i*3+1]=(Math.random()-.5)*5;P[i*3+2]=(Math.random()-.5)*4;V.push([(Math.random()-.5)*.005,(Math.random()-.5)*.005,(Math.random()-.5)*.003])}
+    var pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(P,3));
+    var pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0x6ee7b7,size:.075,transparent:true,opacity:.95,depthWrite:false}));
+    var MAX=450,LP=new Float32Array(MAX*6),lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(LP,3));lg.setDrawRange(0,0);
+    var lines=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0x34d399,transparent:true,opacity:.34,depthWrite:false}));
+    var g=new THREE.Group();g.add(pts);g.add(lines);sc.add(g);
+    var ico=null,ico2=null;
+    if(o.ico!==false){
+      ico=new THREE.Mesh(new THREE.IcosahedronGeometry(1.35,1),new THREE.MeshBasicMaterial({color:0xa7f3d0,wireframe:true,transparent:true,opacity:.42}));
+      ico2=new THREE.Mesh(new THREE.IcosahedronGeometry(.72,0),new THREE.MeshBasicMaterial({color:0x34d399,wireframe:true,transparent:true,opacity:.85}));
+      sc.add(ico);sc.add(ico2);
+    }
+    self.cv=cv;self.vis=true;self.host=null;
+    self.size=function(){
+      var h=self.host;if(!h)return;var w=h.clientWidth,hh=h.clientHeight;if(!w||!hh)return;
+      r.setSize(w,hh,false);cam.aspect=w/hh;cam.updateProjectionMatrix();
+      if(ico){var vw=2*Math.tan(25*Math.PI/180)*6*cam.aspect,show=w>620;ico.visible=ico2.visible=show;ico.position.set(vw*.3,0,0);ico2.position.set(vw*.3,0,0)}
+      if(RM)self.draw(0);
+    };
+    self.draw=function(t){
+      var d2=2.5,c=0,j,k,dx,dy,dz;
+      for(i=0;i<N;i++){
+        for(k=0;k<3;k++){P[i*3+k]+=V[i][k];var lim=k===0?5.6:k===1?2.7:2.1;if(Math.abs(P[i*3+k])>lim)V[i][k]*=-1}
+      }
+      for(i=0;i<N&&c<MAX;i++)for(j=i+1;j<N&&c<MAX;j++){
+        dx=P[i*3]-P[j*3];dy=P[i*3+1]-P[j*3+1];dz=P[i*3+2]-P[j*3+2];
+        if(dx*dx+dy*dy+dz*dz<d2){LP[c*6]=P[i*3];LP[c*6+1]=P[i*3+1];LP[c*6+2]=P[i*3+2];LP[c*6+3]=P[j*3];LP[c*6+4]=P[j*3+1];LP[c*6+5]=P[j*3+2];c++}
+      }
+      pg.attributes.position.needsUpdate=true;lg.attributes.position.needsUpdate=true;lg.setDrawRange(0,c*2);
+      g.rotation.y=Math.sin(t*.12)*.18;
+      if(ico){ico.rotation.x=t*.25;ico.rotation.y=t*.35;ico2.rotation.x=-t*.4;ico2.rotation.y=-t*.3;var s=1+Math.sin(t*1.4)*.03;ico.scale.setScalar(s);ico2.scale.setScalar(2-s)}
+      cam.position.x+=(mx*1.1-cam.position.x)*.04;cam.position.y+=(-my*.7-cam.position.y)*.04;cam.lookAt(0,0,0);
+      r.render(sc,cam);
+    };
+    self.mount=function(host){
+      self.host=host;host.insertBefore(cv,host.firstChild);self.size();
+      if(window.IntersectionObserver){if(self.io)self.io.disconnect();self.io=new IntersectionObserver(function(e){self.vis=e[0].isIntersecting});self.io.observe(host)}
+      if(window.ResizeObserver){if(self.ro)self.ro.disconnect();self.ro=new ResizeObserver(function(){self.size()});self.ro.observe(host)}
+      if(nets.indexOf(self)<0)nets.push(self);
+      if(!RM&&!looping){looping=true;requestAnimationFrame(tick)}
+    };
+  }
+  function tick(ts){requestAnimationFrame(tick);if(document.hidden)return;for(var i=0;i<nets.length;i++){var n=nets[i];if(n.cv.isConnected&&n.vis)n.draw(ts/1000)}}
+
+  /* ---- Bandeau d'accueil du tableau de bord ---- */
+  var heroNet=null,clockTimer=null;
+  function txt(s){var e=$(s);return e?e.textContent.trim():''}
+  function chip(h,html){var s=document.createElement('span');s.innerHTML=html;h.appendChild(s)}
+  function clock(){
+    var d=new Date();
+    $$('.ivp-clock').forEach(function(c){
+      c.firstChild.textContent=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      c.lastChild.textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+    });
+  }
+  function hero(app){
+    if(window.cur!=='dash'||!$('.hd',app)||$('.ivp-hero',app))return;
+    var name=ADMIN?txt('#ivc-admin-name'):txt('#vn'),hr=new Date().getHours(),hello=(hr>=18||hr<5)?'Bonsoir':'Bonjour';
+    var h=document.createElement('section');h.className='ivp-hero';
+    h.innerHTML='<div class="ivp-clock" aria-hidden="true"><b></b><span></span></div><span class="k"></span><h2></h2><p></p><div class="ivp-chips"></div>';
+    $('.k',h).textContent=ADMIN?'Centre de pilotage IVC':'Espace vétérinaire IVC';
+    $('h2',h).textContent=hello+(name?', '+name:'');
+    $('p',h).textContent=ADMIN?'Pilotez la plateforme : utilisateurs, demandes, audits sanitaires et laboratoire, en temps réel.':'Suivez vos missions, vos consultations vidéo, vos analyses et vos patients depuis un seul espace.';
+    var ch=$('.ivp-chips',h);
+    if(ADMIN){
+      chip(ch,'<i class="ivp-dot"></i>Plateforme opérationnelle');
+      var pc=$('.cnt',app);if(pc)chip(ch,'📋 '+esc(pc.textContent.trim())+' demande(s) en attente');
+      var nc=txt('#nc');if(nc&&nc!=='0')chip(ch,'🔔 '+esc(nc)+' notification(s)');
+      var nm=$('#nmsg');if(nm&&nm.style.display!=='none'&&nm.textContent.trim())chip(ch,'💬 '+esc(nm.textContent.trim())+' message(s)');
+    }else{
+      var on=(typeof avail==='undefined')||avail;
+      chip(ch,'<i class="ivp-dot'+(on?'':' off')+'"></i>'+(on?'Disponible pour de nouvelles missions':'Indisponible'));
+      [['#nm','📋','mission(s)'],['#ncs','🎥','consultation(s)'],['#ninsp','🛡️','inspection(s)'],['#nmsg','💬','message(s)']].forEach(function(x){var v=txt(x[0]);if(v&&v!=='0')chip(ch,x[1]+' '+esc(v)+' '+x[2])});
+    }
+    app.insertBefore(h,app.firstChild);
+    try{if(window.THREE){if(!heroNet)heroNet=new Net({});heroNet.mount(h)}}catch(e){}
+    clock();if(!clockTimer)clockTimer=setInterval(clock,20000);
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';'})}
+
+  /* ---- Animations d'entrée à chaque rendu ---- */
+  function count(app){
+    $$('.st strong,.stats>div strong,.ki b,.lgb b',app).forEach(function(s){
+      var tx=s.textContent.trim();if(!/^(\d{1,3}([\s\u00a0\u202f]\d{3})+|\d+)$/.test(tx))return;
+      var n=parseInt(tx.replace(/\D/g,''),10);if(!n||n>1e9)return;var o={v:0};s.textContent='0';
+      gsap.to(o,{v:n,duration:1.1,ease:'power2.out',onUpdate:function(){s.textContent=Math.round(o.v).toLocaleString('fr-FR')},onComplete:function(){s.textContent=tx}});
+    });
+  }
+  function charts(app){
+    $$('.chart svg polyline',app).forEach(function(pl){
+      try{var L=pl.getTotalLength();if(!L)return;pl.style.strokeDasharray=L;pl.style.strokeDashoffset=L;
+        gsap.to(pl,{strokeDashoffset:0,duration:1.2,delay:.25,ease:'power2.out',onComplete:function(){pl.style.strokeDasharray='';pl.style.strokeDashoffset=''}})}catch(e){}
+    });
+    var rc=$$('.chart svg rect',app);if(rc.length)gsap.from(rc,{scaleY:0,transformOrigin:'50% 100%',duration:.7,delay:.2,stagger:.06,ease:'back.out(1.3)'});
+  }
+  function fx(){
+    var app=document.getElementById('app');if(!app)return;
+    var first=$('.hd',app)||app.firstElementChild;if(!first||first.__ivp)return;first.__ivp=1;
+    hero(app);
+    if(!window.gsap||RM)return;
+    var T=$$('.ivp-hero,.hd,.st,.pn,.card,.lgb',app).slice(0,36);
+    if(T.length)gsap.from(T,{y:20,opacity:0,duration:.55,stagger:.045,ease:'power2.out',clearProps:'transform,opacity'});
+    count(app);charts(app);
+  }
+  var app0=document.getElementById('app'),busy=false;
+  if(app0){new MutationObserver(function(){if(busy)return;busy=true;try{fx()}catch(e){}busy=false}).observe(app0,{childList:true});try{fx()}catch(e){}}
+  if(window.gsap&&!RM)gsap.from('.side .nav button,.side .brand,.side .sb,.side .sup,.side .ivc-admin-identity',{x:-18,opacity:0,duration:.5,stagger:.035,delay:.1,ease:'power2.out',clearProps:'transform,opacity'});
+
+  /* ---- Projecteur lumineux qui suit le curseur sur les cartes ---- */
+  document.addEventListener('pointermove',function(e){
+    var c=e.target.closest&&e.target.closest('.st,.pn,.card');if(!c)return;
+    var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px');
+  },{passive:true});
+
+  /* ---- Écran de connexion : fond 3D ---- */
+  function gate(){
+    var g=document.getElementById('ivc-auth-gate');if(!g||g.__ivp)return;g.__ivp=1;
+    try{if(!window.THREE)return;var n=new Net({ico:false,n:60,cls:'ivp-gcv'});n.mount(g)}catch(e){}
+  }
+  gate();new MutationObserver(gate).observe(document.body,{childList:true});
 })();
 </script>
 </body></html>
