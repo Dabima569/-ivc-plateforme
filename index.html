@@ -4882,6 +4882,60 @@ body .lower #expertise{background:linear-gradient(180deg,#f1faf4,#e3f5ea)}
   window.addEventListener('resize',function(){if(panel&&!panel.hidden)position()});
 })();
 </script>
+
+<script id="ivc-return-to-hamburger-menu">
+(function () {
+  window.ivcReturnToMenu = function () {
+    // Close any role/dashboard view without signing in or out.
+    document.querySelectorAll('.ivc-view.is-open').forEach(function (view) {
+      view.classList.remove('is-open');
+    });
+    document.body.classList.remove('ivc-view-active', 'cd-lock', 'ivx-lock');
+
+    var clientDashboard = document.getElementById('ivc-cd');
+    if (clientDashboard) clientDashboard.classList.remove('on');
+
+    var enterpriseDashboard = document.getElementById('ivc-ent');
+    if (enterpriseDashboard) enterpriseDashboard.classList.remove('on');
+
+    var veterinarianDashboard = document.getElementById('ivx');
+    if (veterinarianDashboard) veterinarianDashboard.classList.remove('on');
+
+    var menu = document.getElementById('menu');
+    if (menu) {
+      menu.hidden = false;
+      menu.classList.add('is-open');
+    }
+
+    var burger = document.querySelector('.hamb[aria-controls="menu"]');
+    if (burger) {
+      burger.setAttribute('aria-expanded', 'true');
+      burger.setAttribute('aria-label', 'Fermer le menu');
+    }
+
+    try {
+      history.replaceState(null, '', location.pathname + location.search);
+    } catch (error) {}
+
+    window.scrollTo(0, 0);
+  };
+
+  // The role-space "Retour" button returns to the hamburger menu.
+  // It must not behave like the separate "Retour à l'accueil" menu link.
+  window.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest) return;
+    var back = target.closest('[data-ivc-menu-back]');
+    if (!back) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    window.ivcReturnToMenu();
+  }, true);
+})();
+</script>
+
 </body></html>
 <style>
 /* Reliable modal overlay for mobile Safari and embedded HTML previews */
@@ -5444,7 +5498,7 @@ window.ivcHello=function(){var h=new Date().getHours();return (h>=18||h<5)?'Bons
     e.preventDefault();e.stopImmediatePropagation();
     window.ivcGoHome();
   },true);
-  function watch(){var D=window.IVC&&window.IVC.db;if(!D)return false;D.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT')window.ivcGoHome()});return true}
+  function watch(){var D=window.IVC&&window.IVC.db;if(!D)return false;D.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT')window.ivcReturnToMenu()});return true}
   if(!watch()){var n=0,w=setInterval(function(){n++;if(watch()||n>40)clearInterval(w)},500)}
 })();
 </script>
@@ -5594,63 +5648,3 @@ window.ivcHello=function(){var h=new Date().getHours();return (h>=18||h<5)?'Bons
   sync();
 })();
 </script>
-
-<script id="ivc-retour-accueil-fix-v2">
-(function () {
-  if (window.__ivcRetourAccueilFixV2) return;
-  window.__ivcRetourAccueilFixV2 = true;
-
-  function goPublicHome() {
-    // Utilise la fonction centrale de fermeture des vues si elle existe.
-    if (typeof window.ivcGoHome === "function") {
-      window.ivcGoHome();
-    } else {
-      document.querySelectorAll(".ivc-view.is-open").forEach(function (view) {
-        view.classList.remove("is-open");
-      });
-      document.body.classList.remove("ivc-view-active");
-      var menu = document.getElementById("menu");
-      if (menu) menu.classList.remove("is-open");
-      try {
-        history.replaceState(null, "", location.pathname + location.search);
-      } catch (error) {
-        location.hash = "";
-      }
-      window.scrollTo(0, 0);
-    }
-
-    // Sécurité : le menu ne doit pas se rouvrir après le retour.
-    var menu = document.getElementById("menu");
-    if (menu) menu.classList.remove("is-open");
-    var burger = document.querySelector('.hamb[aria-controls="menu"]');
-    if (burger) {
-      burger.setAttribute("aria-expanded", "false");
-      burger.setAttribute("aria-label", "Ouvrir le menu");
-    }
-  }
-
-  // Capture au niveau window : passe avant les gestionnaires document
-  // qui fermaient la page puis rouvraient le menu.
-  window.addEventListener("click", function (event) {
-    var target = event.target;
-    if (!target || !target.closest) return;
-
-    var backButton = target.closest(
-      "#ivc-parents [data-ivc-menu-back], " +
-      "#ivc-eleveur [data-ivc-menu-back], " +
-      "#ivc-entreprises [data-ivc-menu-back]"
-    );
-
-    if (!backButton) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    if (typeof event.stopImmediatePropagation === "function") {
-      event.stopImmediatePropagation();
-    }
-
-    goPublicHome();
-  }, true);
-})();
-</script>
-
