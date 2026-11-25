@@ -4882,6 +4882,80 @@ body .lower #expertise{background:linear-gradient(180deg,#f1faf4,#e3f5ea)}
   window.addEventListener('resize',function(){if(panel&&!panel.hidden)position()});
 })();
 </script>
+
+<script id="ivc-navigation-home-return-fix">
+/*
+ * Correctif ciblé de navigation :
+ * - « Retour » depuis les espaces Parents / Éleveurs / Entreprises revient
+ *   directement à l'accueil public au lieu de rouvrir le menu.
+ * - Le bouton « Accueil » / fermeture de l'espace IVC revient à l'accueil.
+ * - La session Supabase n'est jamais supprimée par ces actions.
+ */
+(function () {
+  function returnToPublicHome() {
+    // Fermer les espaces et vues superposés sans déconnecter l'utilisateur.
+    ['ivc-cd', 'ivc-ent', 'ivx'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('on');
+    });
+
+    document.querySelectorAll('.ivc-view.is-open').forEach(function (el) {
+      el.classList.remove('is-open');
+    });
+
+    document.body.classList.remove(
+      'cd-lock', 'ivx-lock', 'ivc-view-active',
+      'ivc-modal-open', 'ivc-auth-open'
+    );
+
+    var auth = document.getElementById('ivc-auth');
+    if (auth) auth.hidden = true;
+
+    var menu = document.getElementById('menu');
+    if (menu) menu.classList.remove('is-open');
+
+    var burger = document.querySelector('.hamb[aria-controls="menu"]');
+    if (burger) {
+      burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Ouvrir le menu');
+    }
+
+    // Réinitialiser uniquement l'URL et l'affichage : conserver la session.
+    try {
+      history.replaceState(null, '', location.pathname + location.search);
+    } catch (e) {
+      location.hash = '';
+    }
+
+    if (typeof window.ivcCdHide === 'function') window.ivcCdHide();
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest) return;
+
+    // Bouton « Retour » des pages de choix d'espace.
+    var roleBack = target.closest(
+      '#ivc-parents [data-ivc-menu-back], ' +
+      '#ivc-eleveur [data-ivc-menu-back], ' +
+      '#ivc-entreprises [data-ivc-menu-back]'
+    );
+
+    // Bouton « ← Accueil » en haut du tableau de bord IVC.
+    var dashboardHome = target.closest('#ivx [data-close]');
+
+    if (!roleBack && !dashboardHome) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+    returnToPublicHome();
+  }, true);
+})();
+</script>
+
 </body></html>
 <style>
 /* Reliable modal overlay for mobile Safari and embedded HTML previews */
