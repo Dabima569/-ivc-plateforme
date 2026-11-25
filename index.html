@@ -5389,3 +5389,99 @@ window.ivcHello=function(){var h=new Date().getHours();return (h>=18||h<5)?'Bons
   .header .hamb{flex-basis:37px!important;width:37px!important}
 }
 </style>
+
+<style id="ivc-menu-scroll-isolation-final">
+@media(max-width:700px){
+  html.ivc-menu-scroll-locked{overflow:hidden!important;overscroll-behavior:none!important}
+  body.ivc-menu-scroll-locked{overflow:hidden!important;overscroll-behavior:none!important}
+  body.ivc-menu-scroll-locked .header{
+    position:fixed!important;top:0!important;left:0!important;right:0!important;
+    width:100%!important;z-index:3006!important;
+  }
+  body.ivc-menu-scroll-locked #menu.menu-drawer{
+    position:fixed!important;left:0!important;right:0!important;bottom:0!important;
+    top:var(--ivc-menu-header-height,68px)!important;height:auto!important;
+    max-height:none!important;overflow:hidden!important;overscroll-behavior:contain!important;
+    z-index:3005!important;display:flex!important;flex-direction:column!important;
+  }
+  body.ivc-menu-scroll-locked #menu .ivc-menu-list{
+    min-height:0!important;flex:1 1 auto!important;overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+    touch-action:pan-y!important;
+  }
+  body.ivc-menu-scroll-locked #menu .ivc-menu-tabs{
+    flex:0 0 auto!important;overscroll-behavior:contain!important;
+  }
+  body.ivc-menu-scroll-locked #menu .ivc-menu-actions{
+    flex:0 0 auto!important;
+  }
+}
+</style>
+<script id="ivc-menu-scroll-isolation-final-script">
+(function(){
+  if(window.__ivcMenuScrollIsolationFinal)return;
+  window.__ivcMenuScrollIsolationFinal=true;
+  var menu=document.getElementById('menu');
+  var header=document.querySelector('.header');
+  if(!menu||!header)return;
+  var locked=false, savedY=0, savedBody=null, savedHtml=null;
+  function menuIsOpen(){
+    return menu.classList.contains('is-open') ||
+      (location.hash==='#menu') ||
+      (menu.matches(':target') && !menu.hidden);
+  }
+  function lock(){
+    if(locked)return;
+    locked=true;
+    savedY=window.scrollY||window.pageYOffset||0;
+    savedBody={position:document.body.style.position,top:document.body.style.top,
+      left:document.body.style.left,right:document.body.style.right,width:document.body.style.width,
+      overflow:document.body.style.overflow};
+    savedHtml={overflow:document.documentElement.style.overflow};
+    var h=Math.ceil(header.getBoundingClientRect().height)||68;
+    document.documentElement.style.setProperty('--ivc-menu-header-height',h+'px');
+    document.documentElement.classList.add('ivc-menu-scroll-locked');
+    document.body.classList.add('ivc-menu-scroll-locked');
+    document.documentElement.style.overflow='hidden';
+    document.body.style.position='fixed';
+    document.body.style.top=(-savedY)+'px';
+    document.body.style.left='0';
+    document.body.style.right='0';
+    document.body.style.width='100%';
+    document.body.style.overflow='hidden';
+  }
+  function unlock(){
+    if(!locked)return;
+    locked=false;
+    document.documentElement.classList.remove('ivc-menu-scroll-locked');
+    document.body.classList.remove('ivc-menu-scroll-locked');
+    document.documentElement.style.overflow=savedHtml?savedHtml.overflow:'';
+    if(savedBody){
+      document.body.style.position=savedBody.position;
+      document.body.style.top=savedBody.top;
+      document.body.style.left=savedBody.left;
+      document.body.style.right=savedBody.right;
+      document.body.style.width=savedBody.width;
+      document.body.style.overflow=savedBody.overflow;
+    }
+    window.scrollTo(0,savedY);
+  }
+  function sync(){if(menuIsOpen())lock();else unlock();}
+  var observer=new MutationObserver(sync);
+  observer.observe(menu,{attributes:true,attributeFilter:['class','hidden']});
+  window.addEventListener('hashchange',sync);
+  window.addEventListener('resize',function(){
+    if(locked){
+      var h=Math.ceil(header.getBoundingClientRect().height)||68;
+      document.documentElement.style.setProperty('--ivc-menu-header-height',h+'px');
+    }
+  },{passive:true});
+  document.addEventListener('click',function(e){
+    var trigger=e.target.closest('.hamb[aria-controls="menu"],.ivc-view-hamb');
+    if(trigger)setTimeout(sync,0);
+    if(e.target.closest('[data-ivc-home],[data-ivc-close],[data-ivc-menu-back]'))setTimeout(sync,0);
+    if(e.target.closest('#menu a'))setTimeout(sync,0);
+  },true);
+  sync();
+})();
+</script>
