@@ -2710,7 +2710,6 @@ st.textContent='.ivc-os{position:fixed;inset:0;z-index:2147483647;background:rgb
 +'.ivc-os-ok{text-align:center;padding:10px 4px}.ivc-os-ok h3{margin:8px 0;font-size:19px}.ivc-os-ok p{margin:6px 0;font-size:14px;color:#3b4d63}'
 +'.ivc-os-state{margin:14px 0 4px;padding:14px;border-radius:14px;background:#eef7f1;border:1px solid #cfe8d8;text-align:center}.ivc-os-state b{display:block;font-size:17px;margin-top:4px}'
 +'.ivc-os-state.wait{background:#fff7e6;border-color:#f3dfae}.ivc-os-state.bad{background:#fdecea;border-color:#f3c4be}'
-+'.ivc-pill{position:fixed;left:12px;bottom:16px;z-index:4000;max-width:calc(100% - 24px);border:0;border-radius:999px;padding:11px 16px;background:#087A43;color:#fff;font:inherit;font-weight:700;font-size:14px;box-shadow:0 6px 24px #0004;cursor:pointer}'
 +'.ivc-vet-empty{grid-column:1/-1;margin:0;color:#5c6c7d;font-size:14px}'
 +'.vet-profile .vet-state{font-weight:700}.vet-profile .vet-state.on{color:#087A43}.vet-profile .vet-state.off{color:#b42318}.vet-profile .btn[disabled]{opacity:.55;cursor:not-allowed}';
 document.head.appendChild(st)}
@@ -2766,16 +2765,32 @@ function upd(row){if(!T||T.id!==id||!ov||ov.hidden)return;ov.innerHTML=trackHtml
 poll=setInterval(function(){fetchRow(id).then(function(row){if(row)upd(row)})},6000);
 ch=D.channel('onsite-'+id).on('postgres_changes',{event:'UPDATE',schema:'public',table:'requests',filter:'id=eq.'+id},function(p){upd(p.new)}).subscribe()}
 
-/* ---------- pastille de suivi ---------- */
+/* ---------- suivi de l'intervention : carte dans les tableaux de bord ---------- */
+var active=null;
+function isStale(r){return r.field_status==='arriving'&&r.eta_at&&Date.now()-new Date(r.eta_at).getTime()>6*36e5}
+function dismissKey(r){return r.id+':'+(r.field_status||r.status)}
+function isDismissed(r){try{return localStorage.getItem('ivc-onsite-dismissed')===dismissKey(r)}catch(e){return false}}
+function cardHtml(){
+  if(!active||isDismissed(active))return '';
+  var st=stateOf(active);
+  return '<div class="ivc-onsite-card'+(st.c?' '+st.c:'')+'"><span class="ivc-onsite-ic" aria-hidden="true">🩺</span><div class="ivc-onsite-tx"><small>Intervention sur place</small><b>'+esc(st.t)+'</b></div><button type="button" class="ivc-onsite-x" data-onsite-x aria-label="Masquer ce suivi">×</button><button type="button" class="ivc-onsite-go" data-onsite-open>Voir le suivi</button></div>'}
+function paintAll(){document.querySelectorAll('.ivc-onsite-slot').forEach(function(n){n.innerHTML=cardHtml()})}
+function setActive(r){active=r;paintAll()}
+window.ivcOnsiteCard=cardHtml;
+document.addEventListener('click',function(e){
+  var t=e.target.closest&&e.target.closest('[data-onsite-open],[data-onsite-x]');if(!t||!active)return;
+  e.preventDefault();
+  if(t.hasAttribute('data-onsite-open')){showTracker(active.id);return}
+  try{localStorage.setItem('ivc-onsite-dismissed',dismissKey(active))}catch(x){}
+  paintAll();
+});
 async function refreshPill(){var D=db();if(!D)return;
 try{var se=await D.auth.getSession(),s=se.data&&se.data.session;
-if(!s){uid=null;if(pill){pill.remove();pill=null}return}
+if(!s){uid=null;setActive(null);return}
 if(uid!==s.user.id){uid=s.user.id;if(uch){try{D.removeChannel(uch)}catch(e){}}uch=D.channel('onsite-owner-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'requests',filter:'owner_id=eq.'+uid},function(){refreshPill()}).subscribe()}
 var q=await D.from('requests').select('id,status,field_status,eta_at,description').eq('owner_id',uid).eq('is_onsite',true).in('status',['pending','accepted','in_progress']).order('created_at',{ascending:false}).limit(1);
 var row=!q.error&&q.data&&q.data[0];
-if(!row){if(pill){pill.remove();pill=null}return}
-css();if(!pill){pill=document.createElement('button');pill.type='button';pill.className='ivc-pill';document.body.appendChild(pill)}
-pill.textContent='🩺 '+stateOf(row).s;pill.onclick=function(){showTracker(row.id)}
+setActive(row&&!isStale(row)?row:null);
 }catch(e){}}
 
 /* ---------- sollicitation ---------- */
@@ -3114,6 +3129,7 @@ function chart(){var d=S.data,now=new Date(),ms=[],i;for(i=5;i>=0;i--)ms.push(ne
  return svg+'</svg>'}
 function dash(){var d=S.data,pets=d.pets,pi=pets.length?Math.min(S.pet,pets.length-1):-1,pet=pi>-1?pets[pi]:null,nr=nextRdv(),h='';
  h+='<h1 class="dv-hello">'+hello()+', '+esc(S.name)+' 👋</h1><p class="dv-sub">Suivez la santé de vos animaux et gérez vos services IVC.</p>';
+ h+='<div class="ivc-onsite-slot">'+(window.ivcOnsiteCard?window.ivcOnsiteCard():'')+'</div>';
  h+='<div class="dv-bar">'+(pets.length?pets.slice(0,6).map(function(p,k){return '<button class="dv-tab'+(k===pi?' on':'')+'" data-pet="'+k+'">'+esc(p.n)+'</button>'}).join(''):'<span class="cd-note">Vos animaux apparaîtront après votre première demande.</span>')+'<button class="dv-cta" data-act="rdv">＋ Prendre un rendez-vous</button></div><div class="dv-grid">';
  h+='<section class="dv-card s4"><h2>'+(pet?'Fiche de l’animal':'Mes animaux')+'<button class="dv-act" data-go="animals">Voir tous</button></h2>'+(pet?'<div class="dv-pet"><span class="dv-pa">'+icon(pet.t)+'</span><div><b>'+esc(pet.n)+'</b><small>'+esc(pet.t)+'</small></div></div><div class="dv-kv"><span>Demandes</span><b>'+pet.c+'</b></div><div class="dv-kv"><span>Animaux suivis</span><b>'+pets.length+'</b></div>':'<p class="cd-note">Aucun animal enregistré pour le moment.</p><button class="cd-btn o" data-act="rdv">Prendre un rendez-vous</button>')+'</section>';
  h+='<section class="dv-card s4"><h2>Analyses<button class="dv-plus" data-act="lims" aria-label="Nouvelle analyse">+</button><button class="dv-act" data-go="lims">Voir tout</button></h2>'+(d.ana.length?d.ana.slice(0,4).map(function(x){return '<div class="dv-row"><span class="dv-ic">🧪</span><div class="dv-tx"><b>'+esc(x.title||x.sample_type||'Analyse')+'</b><small>'+fd(x.created_at)+'</small></div>'+pill(x.status)+'</div>'}).join(''):'<p class="cd-note">Aucune analyse enregistrée.</p>')+'</section>';
@@ -3211,7 +3227,7 @@ async function build(uid,email,p){
   var kp=function(ic,v,l,sub,d){return '<div class="dv-card dv-kpi s3"><i>'+ic+'</i><b>'+v+'</b><span>'+l+'</span><small>'+sub+(d?' · <em>'+d+'</em>':'')+'</small></div>'};
   return '<div class="dv-wrap"><header class="dv-top"><div class="dv-brand"><b>IVC</b><span>Ivoire Vet Consulting<small>Espace Entreprise Vétérinaire</small></span></div><span class="sp"></span><button type="button" class="dv-ghost" data-en="public">Retour au site public</button><div class="dv-user">'+av+'<span class="dv-uname">'+esc(org)+'</span></div></header>'
   +'<div class="dv-shell"><nav class="dv-side" aria-label="Espace entreprise">'+nav('🏠','Accueil','',1)+nav('🎥','Consultations','rdv')+nav('🏠','Interventions','vet')+nav('🛡️','Audit sanitaire','sa')+nav('🧪','Analyses','lims')+nav('⎋','Déconnexion','out').replace('class="dv-nav"','class="dv-nav dv-out"')+'</nav>'
-  +'<main class="dv-main"><h1 class="dv-hello">Bienvenue, '+esc(org)+'</h1><p class="dv-sub">Gérez votre activité vétérinaire, vos services, vos audits sanitaires et vos demandes sur IVC.</p><div class="dv-grid">'
+  +'<main class="dv-main"><h1 class="dv-hello">Bienvenue, '+esc(org)+'</h1><p class="dv-sub">Gérez votre activité vétérinaire, vos services, vos audits sanitaires et vos demandes sur IVC.</p><div class="ivc-onsite-slot">'+(window.ivcOnsiteCard?window.ivcOnsiteCard():'')+'</div><div class="dv-grid">'
   +kp('🎥',n30(cons),'Consultations','30 derniers jours',dl(n30(cons),nP(cons)))+kp('🏠',n30(intv),'Interventions','30 derniers jours',dl(n30(intv),nP(intv)))+kp('🛡️',sv[2][1],'Audits &amp; hygiène','En cours','')+kp('🧪',n30(done,'updated_at'),'Analyses (LIMS)','Terminées, 30 jours',dl(n30(done,'updated_at'),nP(done,'updated_at')))
   +'<section class="dv-card s7"><h2>Activité de l’entreprise<small class="dv-hint">7 jours</small></h2><div class="en-leg"><span style="color:#087A43">● Consultations</span><span style="color:#2563c9">● Interventions</span><span style="color:#e0a100">● Audits</span><span style="color:#8a3fd1">● Analyses</span></div>'+svg+'</section>'
   +'<section class="dv-card s5"><h2>Mon entreprise</h2><div class="dv-pet"><span class="dv-pa">'+ini+'</span><div><b>'+esc(org)+'</b><small>'+esc(email)+'</small></div></div><div class="dv-kv"><span>Pays</span><b>'+esc(p.country||'non renseigné')+'</b></div><div class="dv-kv"><span>Compte</span><span class="cd-pill">Vérifié</span></div>'+sv.map(function(x){return '<div class="dv-kv"><span>'+esc(x[0])+'</span><b>'+(x[1]?x[1]+' en cours':'Aucune')+'</b></div>'}).join('')+'</section>'
@@ -4846,10 +4862,6 @@ body .lower #expertise{background:linear-gradient(180deg,#f1faf4,#e3f5ea)}
 </script>
 <style id="ivc-lang-css">#menu .lang{display:flex;align-items:center;justify-content:space-between;width:100%;box-sizing:border-box;padding:14px 16px;background:none;border:0;border-top:1px solid #DDF3E7;font:inherit;font-weight:600;color:#263238;cursor:pointer;text-align:left}#menu .lang span{display:inline!important;color:#263238!important;font-size:inherit!important}#menu .lang b{color:#087A43}</style>
 
-<style id="ivc-pill-fix">
-.ivc-pill{max-width:calc(100% - 104px)!important;font-size:13px!important;padding:9px 14px!important;bottom:14px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body:has(#menu.is-open) .ivc-pill,body:has(.ivc-view.is-open) .ivc-pill,body:has(#ivc-auth:not([hidden])) .ivc-pill,body.ivc-modal-active .ivc-pill{display:none!important}
-</style>
 
 <style id="ivc-gps-client-css">
 #ivc-gps-panel{z-index:2147483200!important}
@@ -5620,6 +5632,21 @@ window.ivcHello=function(){var h=new Date().getHours();return (h>=18||h<5)?'Bons
 .vet-profile-body .btn-green:hover,.ivc-deployment-overlay .btn-green:hover{background:#066a39}
 .vet-profile-body .btn:disabled,.vet-profile-body .btn[disabled]{background:#e4ebe7;color:#5c6c7d;cursor:not-allowed}
 .btn:focus-visible{outline:3px solid #7ee0a5;outline-offset:3px}
+/* Carte de suivi d'intervention (tableaux de bord) */
+.ivc-onsite-slot:empty{display:none}
+.ivc-onsite-card{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:12px 14px;border-radius:18px;background:#fff;border:1px solid #cfe8d8;box-shadow:0 10px 26px -18px rgba(5,61,35,.55)}
+.ivc-onsite-card.wait{background:#fff7e6;border-color:#f3dfae}
+.ivc-onsite-card.bad{background:#fdecea;border-color:#f3c4be}
+.ivc-onsite-ic{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:14px;background:#e4f7e9;font-size:20px}
+.ivc-onsite-tx{flex:1;min-width:0}
+.ivc-onsite-tx small{display:block;color:#5c6c7d;font-size:12px;font-weight:700}
+.ivc-onsite-tx b{display:block;color:#053d23;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.ivc-onsite-go{flex:none;border:0;border-radius:999px;background:#087A43;color:#fff;font:inherit;font-weight:800;font-size:13px;padding:10px 14px;cursor:pointer}
+.ivc-onsite-x{flex:none;order:2;border:0;background:transparent;color:#5c6c7d;font:inherit;font-size:24px;line-height:1;width:34px;height:34px;cursor:pointer}
+.ivc-onsite-go{order:3}
+#ivc-cd .ivc-onsite-x,#ivc-ent .ivc-onsite-x{font-size:26px;line-height:1}
+#ivc-cd .ivc-onsite-go,#ivc-ent .ivc-onsite-go{font-size:13px;font-weight:800}
+@media(max-width:560px){.ivc-onsite-card{flex-wrap:wrap}.ivc-onsite-tx{flex:1 1 calc(100% - 110px)}.ivc-onsite-go{flex:1 1 100%;min-height:44px}}
 /* Le bouton d'assistance flottant ne doit plus recouvrir la fin des tableaux de bord */
 .dv-shell{padding-bottom:112px!important}
 @media(max-width:700px){
