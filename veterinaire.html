@@ -188,6 +188,19 @@ td,th{padding:14px 18px}
 #ivc-auth-gate button:hover{transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
+<style id="ivc-cancel-css">
+#ivc-cancel-banner{margin:0 0 12px;position:static}
+#ivc-cancel-banner:empty{display:none}
+.ivc-cb{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:#fde4e4;color:#b42318;border:1px solid #f3b4ae;box-sizing:border-box;max-width:100%}
+.ivc-cb-ic{font-size:20px;line-height:1;flex:0 0 auto}
+.ivc-cb-tx{flex:1 1 220px;min-width:0}
+.ivc-cb-tx b{display:block;font-size:15px}
+.ivc-cb-tx small{display:block;margin-top:2px;opacity:.92;overflow-wrap:anywhere;font-size:13px}
+.ivc-cb-go{flex:0 0 auto;border:1px solid currentColor;background:transparent;color:inherit;border-radius:10px;padding:7px 12px;font-weight:700;cursor:pointer}
+.ivc-cb-x{flex:0 0 auto;margin-left:auto;border:0;background:transparent;color:inherit;font-size:22px;line-height:1;cursor:pointer;padding:2px 8px}
+[data-theme="dark"] .ivc-cb{background:#3b1717;color:#ffb4ab;border-color:#7a2b2b}
+@media(max-width:560px){.ivc-cb-go{order:3;width:100%}.ivc-cb-x{order:2}}
+</style>
 </head><body>
 <aside class="side" id="side">
 <div class="brand"><span style="font-size:30px">🐾</span><div>IVC<small>Espace vétérinaire</small></div></div>
@@ -211,6 +224,7 @@ td,th{padding:14px 18px}
 <button class="ib" id="plus" aria-label="Nouveau rapport">＋</button>
 <div class="pop" id="pn"></div><input type="file" id="file" accept="image/*" hidden>
 </header>
+<div id="ivc-cancel-banner" role="status" aria-live="polite"></div>
 <div id="app"></div>
 </div>
 <div class="mb" id="mb"><div class="md" id="md"></div></div><div class="toast" id="toast" role="status"></div>
@@ -231,14 +245,14 @@ var CM=[];
 var ACT=[];
 var AUDIT_COUNT=0,INTERVENTION_COUNT=0;
 var SL={"Lun":[0,0],"Mar":[0,0],"Mer":[0,0],"Jeu":[0,0],"Ven":[0,0],"Sam":[0,0],"Dim":[0,0]};
-var ST={w:"À répondre",a:"Acceptée",x:"Refusée",d:"Effectuée"};
+var ST={w:"À répondre",a:"Acceptée",x:"Refusée",c:"Annulée par le client",d:"Effectuée"};
 function $$(s){return document.querySelectorAll(s)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function toast(m){var e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},2600)}
 function modal(h){$("#md").innerHTML=h;$("#mb").classList.add("show")}function close(){if(IVC_ROOM){try{IVC_ROOM.disconnect()}catch(e){}IVC_ROOM=null;}$("#mb").classList.remove("show")}
 function pend(){return M.filter(function(m){return m[8]==="w"})}
 function log(t){ACT.unshift([t,"À l’instant"]);ACT.length=Math.min(ACT.length,6)}
-function tg(s){return'<span class="tg '+(s==="w"?"w":s==="x"?"x":"")+'">'+ST[s]+'</span>'}
+function tg(s){return'<span class="tg '+(s==="w"?"w":s==="x"||s==="c"?"x":"")+'">'+ST[s]+'</span>'}
 function counts(){var pi=INSP.filter(function(x){return["assigned","scheduled","in_progress"].indexOf(x.status)>-1}).length,ni=$("#ninsp");if(ni){ni.textContent=pi;ni.style.display=pi?"":"none"}var p=pend().length;$("#nm").textContent=p;$("#nm").style.display=p?"":"none";$("#ncs").textContent=C.length;var u=MSG.filter(function(m){return m[2]}).length;$("#nmsg").textContent=u;$("#nmsg").style.display=u?"":"none";$("#nc").textContent=p+u;$("#nc").style.display=p+u?"":"none"}
 function msRow(m){return'<div class="ms"><div class="th">'+m[7]+'</div><div><b>'+esc(m[1])+'</b><small>'+esc(m[2])+'</small><small>📍 '+esc(m[3])+'</small><small>📅 '+m[4]+' &nbsp;🕒 '+m[5]+'</small><span class="tg '+(m[6].indexOf("vidéo")>-1?"":"w")+'">'+m[6]+'</span></div><div class="ac">'+(m[8]==="w"?'<button class="pb" data-a="acc" data-id="'+m[0]+'">✓ Accepter</button><button class="xb" data-a="ref" data-id="'+m[0]+'">✕ Refuser</button>':tg(m[8]))+'</div></div>'}
 function dash(){var p=pend(),tot=P.length,mx=60,h="",bc=["#10b981","#14b8a6","#38bdf8","#0ea5e9","#3b82f6","#6366f1"],cn=CM.length?CM[CM.length-1][1]:0;
@@ -327,7 +341,7 @@ $("#mb").onclick=function(e){if(e.target===this)close()};document.addEventListen
 $("#vn").textContent=VN;
 /* IVC Supabase bridge — missions affectées, réponses et profil vétérinaire */
 var IVC_URL="https://eykvnhbkhcelzwbowxqz.supabase.co", IVC_KEY="sb_publishable_nRk4BoZlexVmU7RXdoSdMg_Nlk1B8XU", ivcClient=null, ivcUser=null, ivcProfile=null;
-function ivcVetStatus(s){return ({pending:"w",accepted:"a",refused:"x",date_proposed:"w",in_progress:"a",completed:"d",cancelled:"x"})[s]||"w"}
+function ivcVetStatus(s){return ({pending:"w",accepted:"a",refused:"x",date_proposed:"w",in_progress:"a",completed:"d",cancelled:"c"})[s]||"w"}
 function ivcVetDate(s){if(!s)return "—";var d=new Date(s);return d.toLocaleDateString("fr-FR")+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
 function ivcFmtDay(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||""));if(!m)return String(s||"");var d=new Date(+m[1],+m[2]-1,+m[3]);return isNaN(d.getTime())?String(s):d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}
 function ivcVetRequestSummary(x){var d=x.description||"";try{var j=JSON.parse(d);if(j&&typeof j==="object"){var a=[];if(x.is_onsite)a.push("Intervention sur site");if(x.field_status==="en_route")a.push("Vous êtes en route");if(j.animal&&j.animal.species)a.push("Animal : "+j.animal.species+(j.animal.name?" ("+j.animal.name+")":""));if(j.date)a.push((x.is_onsite?"Arrivée souhaitée : ":"Date souhaitée : ")+ivcFmtDay(j.date)+(j.time?" à "+j.time:""));if(x.eta_at)a.push("Arrivée prévue : "+new Date(x.eta_at).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}));if(j.location&&(j.location.commune||j.location.address))a.push("Lieu : "+[j.location.commune,j.location.address].filter(Boolean).join(" — "));if(j.details)a.push(j.details);return a.join(" · ")||x.subject||"Demande IVC"}}catch(e){}return d||x.animal_type||"Demande IVC"}
@@ -339,8 +353,22 @@ async function ivcInspStart(id){var r=await ivcClient.rpc("ivc_set_inspection_st
 async function ivcInspForm(id){var x=INSP.find(function(y){return y.id===id});if(!x)return;var a=await ivcClient.from("inspection_reports").select("*").eq("inspection_id",id).maybeSingle();var b=await ivcClient.from("inspection_findings").select("*").eq("inspection_id",id).order("created_at");modal('<h3>Fiche — '+esc(x.establishment_name)+'</h3><p>'+esc(IVCI.KD[x.kind])+' · '+esc(IVCI.ET[x.establishment_type])+'</p>'+IVCI.form(a.data,b.data||[])+'<div class="ac"><button class="sb" data-a="close">Fermer</button><button class="sb" data-a="insp-save" data-id="'+id+'">Enregistrer</button><button class="pb" data-a="insp-submit" data-id="'+id+'">Soumettre</button></div>');IVCI.bind($("#md"))}
 async function ivcInspSave(id,sub){var d=IVCI.collect($("#md"));if(sub&&!confirm("Soumettre le rapport à l’administration ? Il ne sera plus modifiable."))return;var r=await ivcClient.rpc("ivc_save_inspection_report",{p_id:id,p_checklist:d.checklist,p_conclusion:d.conclusion,p_recommendations:d.recommendations,p_findings:d.findings,p_submit:sub});if(r.error){toast(r.error.message);return}toast(sub?"Rapport soumis à l’administration.":"Brouillon enregistré.");if(sub)close();ivcLoadVetData().catch(function(e){toast(e.message)})}
 async function ivcInspViewV(id){var x=INSP.find(function(y){return y.id===id});if(!x)return;var a=await ivcClient.from("inspection_reports").select("*").eq("inspection_id",id).maybeSingle();var b=await ivcClient.from("inspection_findings").select("*").eq("inspection_id",id).order("created_at");var h=IVCI.report(x,a.data,b.data||[]);window._ivciHtml=h;modal('<div style="max-height:62vh;overflow:auto">'+h+'</div><div class="ac"><button class="sb" data-a="close">Fermer</button><button class="pb" data-a="insp-print">Imprimer</button></div>')}
+var IVC_PREV_ST={};
+function ivcCancelSeen(){try{return JSON.parse(localStorage.getItem("ivc_vet_cancel_seen")||"[]")}catch(e){return[]}}
+function ivcCancelBanner(){
+ var box=$("#ivc-cancel-banner");if(!box)return;
+ var now=Date.now(),seen=ivcCancelSeen();
+ M.forEach(function(m){var p=IVC_PREV_ST[m[0]];if(p&&p!=="cancelled"&&m[9]==="cancelled")toast("Demande annulée par le client : "+(m[1]||"Demande"));IVC_PREV_ST[m[0]]=m[9]});
+ var list=M.filter(function(m){var r=m[10]||{};return m[9]==="cancelled"&&seen.indexOf(m[0])<0&&r.updated_at&&now-new Date(r.updated_at).getTime()<7*864e5});
+ if(!list.length){box.innerHTML="";return}
+ var txt=list.slice(0,2).map(function(m){return esc(m[1])+" — "+esc(m[2])+" (annulée le "+esc(ivcVetDate((m[10]||{}).updated_at))+")"}).join("<br>");
+ if(list.length>2)txt+="<br>et "+(list.length-2)+" autre"+(list.length>3?"s":"");
+ box.innerHTML='<div class="ivc-cb" role="alert"><span class="ivc-cb-ic" aria-hidden="true">⚠️</span><div class="ivc-cb-tx"><b>Demande annulée par le client</b><small>'+txt+'</small></div><button type="button" class="ivc-cb-go" data-cb="go">Voir mes missions</button><button type="button" class="ivc-cb-x" data-cb="x" aria-label="Fermer l’alerte">×</button></div>';
+ box.__ids=list.map(function(m){return m[0]});
+ if(!box.__bound){box.__bound=1;box.addEventListener("click",function(e){var b=e.target.closest("[data-cb]");if(!b)return;var s=ivcCancelSeen().concat(box.__ids||[]);try{localStorage.setItem("ivc_vet_cancel_seen",JSON.stringify(s.slice(-200)))}catch(x){}box.innerHTML="";if(b.getAttribute("data-cb")==="go"){var n=document.querySelector('[data-v="missions"]');if(n)n.click()}})}
+}
 async function ivcLoadVetData(){
- var rq=await ivcClient.from("requests").select("id,owner_id,request_type,subject,description,animal_name,animal_type,assigned_professional_id,status,created_at,confirmed_at,consultation_mode,is_onsite,eta_at,field_status").eq("assigned_professional_id",ivcUser.id).order("created_at",{ascending:false});
+ var rq=await ivcClient.from("requests").select("id,owner_id,request_type,subject,description,animal_name,animal_type,assigned_professional_id,status,created_at,confirmed_at,consultation_mode,is_onsite,eta_at,field_status,updated_at").eq("assigned_professional_id",ivcUser.id).order("created_at",{ascending:false});
  if(rq.error)throw rq.error;
  var allAssigned=rq.data||[];AUDIT_COUNT=allAssigned.filter(function(x){return String(x.request_type||"").toLowerCase().indexOf("audit")>-1}).length;INTERVENTION_COUNT=allAssigned.filter(function(x){var t=String(x.request_type||"").toLowerCase();return t.indexOf("intervention")>-1||t.indexOf("deployment")>-1||t.indexOf("terrain")>-1}).length;
  var reqs=allAssigned.filter(function(x){return String(x.request_type||"").toLowerCase()==="veterinary"}),owners={},ids=[...new Set(reqs.map(function(x){return x.owner_id}).filter(Boolean))];
@@ -354,7 +382,7 @@ async function ivcLoadVetData(){
  var byReq={};if(reqs.length){var messages=await ivcClient.from("messages").select("id,request_id,sender_id,body,created_at").in("request_id",reqs.map(function(x){return x.id})).order("created_at",{ascending:false});if(messages.error)throw messages.error;(messages.data||[]).forEach(function(x){if(!byReq[x.request_id])byReq[x.request_id]=x})}MSG=reqs.map(function(rqx){var x=byReq[rqx.id];return[(owners[rqx.owner_id]||"Client IVC")+" · "+(rqx.subject||"Demande"),x?x.body:"Aucun message pour le moment",x&&x.sender_id!==ivcUser.id?1:0,rqx.id,x?x.sender_id:null,x?x.created_at:""]}).sort(function(a,b){return String(b[5]||"").localeCompare(String(a[5]||""))});var ip=await ivcClient.from("inspections").select("*").eq("expert_id",ivcUser.id).order("created_at",{ascending:false});INSP=ip.data||[];
  ACT=reqs.slice(0,6).map(function(x){return[(x.subject||"Mission IVC")+" · "+x.status,ivcVetDate(x.created_at)]});
  CM=[];reqs.filter(function(x){return x.consultation_mode==="video"&&["accepted","in_progress","completed"].indexOf(x.status)>-1}).forEach(function(x){var d=new Date(x.confirmed_at||x.created_at),k=d.toLocaleDateString("fr-FR",{month:"short"});var row=CM.find(function(y){return y[0]===k});if(row)row[1]++;else CM.push([k,1])});CM=CM.slice(-6);
- view();
+ ivcCancelBanner();view();
 }
 async function ivcVetReply(m,s){
  if(!m)return;var req=m[10];var result;
@@ -368,7 +396,7 @@ async function ivcVetReply(m,s){
 }
 function ivcEtaLbl(iso){var d=new Date(iso),n=new Date();return (d.toDateString()===n.toDateString()?"":"le "+d.toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" ")+"à "+ivcHm(iso)}
 function ivcHm(iso){var d=new Date(iso);return ("0"+d.getHours()).slice(-2)+"h"+("0"+d.getMinutes()).slice(-2)}
-function ivcOnsiteCell(m){var r=m[10]||{};if(!r.is_onsite||["accepted","in_progress"].indexOf(m[9])<0)return"—";var st=r.field_status==="arriving"&&r.eta_at?"Arrivée annoncée "+ivcEtaLbl(r.eta_at):r.field_status==="en_route"?"En route":"Acceptée";return"<small>"+st+"</small><br><button class=\"pb\" data-a=\"enroute\" data-id=\""+m[0]+"\">Je suis en route</button> <button class=\"sb\" data-a=\"arrive\" data-id=\""+m[0]+"\">J’arrive à…</button> <button class=\"sb\" data-ivc-gps-open=\""+m[0]+"\">📍 Carte du client</button>"+(m[9]==="in_progress"?" <button class=\"sb\" data-a=\"finish\" data-id=\""+m[0]+"\">Intervention terminée</button>":"")}
+function ivcOnsiteCell(m){var r=m[10]||{};if(m[9]==="cancelled")return"<small>Annulée par le client</small>";if(!r.is_onsite||["accepted","in_progress"].indexOf(m[9])<0)return"—";var st=r.field_status==="arriving"&&r.eta_at?"Arrivée annoncée "+ivcEtaLbl(r.eta_at):r.field_status==="en_route"?"En route":"Acceptée";return"<small>"+st+"</small><br><button class=\"pb\" data-a=\"enroute\" data-id=\""+m[0]+"\">Je suis en route</button> <button class=\"sb\" data-a=\"arrive\" data-id=\""+m[0]+"\">J’arrive à…</button> <button class=\"sb\" data-ivc-gps-open=\""+m[0]+"\">📍 Carte du client</button>"+(m[9]==="in_progress"?" <button class=\"sb\" data-a=\"finish\" data-id=\""+m[0]+"\">Intervention terminée</button>":"")}
 async function ivcOnsiteProgress(id,action,eta){var r=await ivcClient.rpc("ivc_update_onsite_progress",{p_request_id:id,p_action:action,p_eta:eta||null});if(r.error){toast(r.error.message);return false}toast(action==="en_route"?"Le client est informé : vous êtes en route.":"Le client est informé de votre heure d’arrivée.");close();await ivcLoadVetData();return true}
 function ivcLocalDay(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
 async function ivcOnsiteCheck(id){var c=await ivcClient.from("requests").select("status,is_onsite,assigned_professional_id,description").eq("id",id).single();if(c.error||!c.data||c.data.is_onsite!==true||c.data.assigned_professional_id!==ivcUser.id||["accepted","in_progress"].indexOf(c.data.status)<0)return null;return c.data}
