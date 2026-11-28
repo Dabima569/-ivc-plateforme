@@ -2018,6 +2018,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var login=await client.auth.signInWithPassword({email:em,password:pw});
         if(login.error)throw login.error;
         var result=await loadIVCProfile(client,login.data.user.id);
+        if(!result.ok&&result.redirect==='veterinaire'){close();location.href=window.IVC_VET_URL||'veterinaire.html';return;}
         if(!result.ok){
           await client.auth.signOut();
           form.hidden=true;done.hidden=false;
@@ -2046,7 +2047,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if(['proprietaire','client','acheteur'].includes(p.role))space='parent';
       else if(p.role==='eleveur')space='eleveur';
       else if(p.role==='entreprise'&&p.is_verified===true)space='entreprise';
-      else if(p.role==='veterinaire')return {ok:false,message:'Ce compte est un compte vétérinaire IVC : utilisez l’espace vétérinaire dédié.'};
+      else if(p.role==='veterinaire')return {ok:false,redirect:'veterinaire',message:'Ce compte est un compte vétérinaire IVC : utilisez l’espace vétérinaire dédié.'};
       else if(p.role==='admin')return {ok:false,message:'Ce compte ne relève pas de l’espace public IVC.'};
       if(!space)return {ok:false,message:'Le rôle associé à votre compte ne permet pas l’accès à cet espace public.'};
       return {ok:true,space:space,name:p.full_name||'Utilisateur IVC'};
@@ -2547,6 +2548,7 @@ window.ivcCallUI=ivcCallUI;
 </script>
 <script id="ivc-supabase">
 /* Clé publique « anon » : prévue pour être visible dans une page. Ne jamais y mettre la clé « service_role ». */
+window.IVC_VET_URL='veterinaire.html';
 window.IVC_CONFIG={SUPABASE_URL:'https://eykvnhbkhcelzwbowxqz.supabase.co',SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5a3ZuaGJraGNlbHp3Ym93eHF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyMjkxNTIsImV4cCI6MjEwOTgwNTE1Mn0.8qQcG6LrpGlPZ4EprEl7rW7HG3x4NALt-5sb5JAOrWE'};
 (function(){var C=window.IVC_CONFIG,ok=!!window.supabase;
 window.IVC={on:ok,db:ok?window.supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null,_room:null};
@@ -2563,7 +2565,7 @@ window.ivcOpenMySpace=async function(){
       alert('L’espace administration est séparé du site public. Utilisez son adresse d’accès dédiée.');return;
     }
     if(role==='veterinaire'){
-      if(confirm('Ce compte est un compte vétérinaire IVC : il utilise l’espace vétérinaire dédié, pas l’espace entreprise cliente de ce site.\n\nVoulez-vous vous déconnecter pour utiliser un autre compte ?')&&window.ivcLogout)window.ivcLogout();
+      location.href=window.IVC_VET_URL||'veterinaire.html';
       return;
     }
     if(role==='entreprise'){
